@@ -16,7 +16,7 @@ export class ApiError extends Error {
 function ensureApiKey(): string {
   const key = getApiKey()
   if (!key) {
-    console.error(chalk.red('Not logged in. Run `slax-reader-cli login` first.'))
+    console.error(chalk.red('Not logged in. Run `reader-cli login` first.'))
     process.exit(1)
   }
   return key
@@ -57,7 +57,7 @@ export function handleApiError(err: unknown): never {
   if (err instanceof ApiError) {
     switch (err.statusCode) {
       case 401:
-        console.error(chalk.red('Invalid API Key. Run `slax-reader-cli login` to update.'))
+        console.error(chalk.red('Invalid API Key. Run `reader-cli login` to update.'))
         break
       case 403:
         console.error(chalk.red('Permission denied. Your subscription may be expired.'))

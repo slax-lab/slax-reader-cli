@@ -4,7 +4,7 @@ import ora from 'ora'
 import { execSync } from 'node:child_process'
 import { checkForUpdate, getLatestVersion } from '../lib/version.js'
 
-const PACKAGE_NAME = '@slax-lab/slax-reader-cli'
+const PACKAGE_NAME = '@slax-lab/reader-cli'
 
 export function registerUpgradeCommands(program: Command): void {
   program
@@ -32,7 +32,7 @@ export function registerUpgradeCommands(program: Command): void {
       spinner.info(`New version available: ${chalk.yellow(`v${currentVersion}`)} → ${chalk.green(`v${latestVersion}`)}`)
 
       if (opts.check) {
-        console.log(chalk.dim(`Run \`slax-reader-cli upgrade\` to install.`))
+        console.log(chalk.dim(`Run \`reader-cli upgrade\` to install.`))
         return
       }
 

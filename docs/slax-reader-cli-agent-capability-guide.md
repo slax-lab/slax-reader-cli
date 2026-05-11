@@ -19,11 +19,11 @@ Help me install and set up Slax Reader CLI: https://github.com/slax-lab/slax-rea
 ### Option 2: Manual install
 
 ```bash
-npm install -g @slax-lab/slax-reader-cli
-slax-reader-cli login
+npm install -g @slax-lab/reader-cli
+reader-cli login
 ```
 
-That's it. Your agent can now run `slax-reader-cli` commands.
+That's it. Your agent can now run `reader-cli` commands.
 
 ---
 
@@ -35,8 +35,8 @@ You're deep in a research session with your AI. It's pulling up articles, papers
 
 | Your Prompt | What Happens |
 |-------------|-------------|
-| "Save all these links to my reading list with tag 'research'" | Agent runs `slax-reader-cli add <url> --tags "research"` for each link it found |
-| "That article about transformers was great, bookmark it" | Agent identifies the URL from context and runs `slax-reader-cli add https://arxiv.org/abs/... --title "Attention Is All You Need" --tags "ml,paper"` |
+| "Save all these links to my reading list with tag 'research'" | Agent runs `reader-cli add <url> --tags "research"` for each link it found |
+| "That article about transformers was great, bookmark it" | Agent identifies the URL from context and runs `reader-cli add https://arxiv.org/abs/... --title "Attention Is All You Need" --tags "ml,paper"` |
 
 ### Scenario 2: Curate While You Code
 
@@ -44,9 +44,9 @@ During a code review or debugging session, your agent finds relevant docs, Stack
 
 | Your Prompt | What Happens |
 |-------------|-------------|
-| "Save this GitHub issue for follow-up" | `slax-reader-cli add https://github.com/org/repo/issues/42 --tags "bug,follow-up"` |
-| "Bookmark this MDN page, I keep coming back to it" | `slax-reader-cli add https://developer.mozilla.org/... --title "CSS Grid Guide" --tags "reference,css"` |
-| "Archive this blog post before it goes offline" | `slax-reader-cli add https://blog.example.com/post --archive --tags "engineering"` |
+| "Save this GitHub issue for follow-up" | `reader-cli add https://github.com/org/repo/issues/42 --tags "bug,follow-up"` |
+| "Bookmark this MDN page, I keep coming back to it" | `reader-cli add https://developer.mozilla.org/... --title "CSS Grid Guide" --tags "reference,css"` |
+| "Archive this blog post before it goes offline" | `reader-cli add https://blog.example.com/post --archive --tags "engineering"` |
 
 ### Scenario 3: Daily Reading Digest
 
@@ -63,7 +63,7 @@ Found something your team should read? Save it and share the bookmark:
 
 | Your Prompt | What Happens |
 |-------------|-------------|
-| "Save this API design guide — tag it 'team-reading' so everyone can find it" | `slax-reader-cli add https://... --title "API Design Best Practices" --tags "team-reading,api"` |
+| "Save this API design guide — tag it 'team-reading' so everyone can find it" | `reader-cli add https://... --title "API Design Best Practices" --tags "team-reading,api"` |
 | "Bookmark these three articles about React Server Components for the frontend team" | Agent saves each with `--tags "frontend,rsc,team-reading"` |
 
 ### Scenario 5: Archive Before It Disappears
@@ -72,8 +72,8 @@ Web content vanishes. Blog posts get deleted, pages get restructured, paywalls g
 
 | Your Prompt | What Happens |
 |-------------|-------------|
-| "This looks like it might get taken down, archive it" | `slax-reader-cli add https://... --archive --title "..." --tags "archived"` |
-| "Save and archive all the documentation links from this thread" | Agent extracts URLs and runs `slax-reader-cli add <url> --archive` for each |
+| "This looks like it might get taken down, archive it" | `reader-cli add https://... --archive --title "..." --tags "archived"` |
+| "Save and archive all the documentation links from this thread" | Agent extracts URLs and runs `reader-cli add <url> --archive` for each |
 
 ---
 
@@ -91,17 +91,17 @@ Web content vanishes. Blog posts get deleted, pages get restructured, paywalls g
 
 ## Command Reference
 
-Run `slax-reader-cli --help` for the full overview.
+Run `reader-cli --help` for the full overview.
 
 | Action | Command |
 |--------|---------|
-| Log in with API Key | `slax-reader-cli login [--api-key <key>]` |
-| Log out | `slax-reader-cli logout` |
-| View current user | `slax-reader-cli whoami` |
-| Save a bookmark | `slax-reader-cli add <url> [-t title] [-d desc] [--tags t1,t2] [--archive]` |
-| Check for updates | `slax-reader-cli upgrade --check` |
-| Upgrade to latest | `slax-reader-cli upgrade` |
-| Show help | `slax-reader-cli --help` |
+| Log in with API Key | `reader-cli login [--api-key <key>]` |
+| Log out | `reader-cli logout` |
+| View current user | `reader-cli whoami` |
+| Save a bookmark | `reader-cli add <url> [-t title] [-d desc] [--tags t1,t2] [--archive]` |
+| Check for updates | `reader-cli upgrade --check` |
+| Upgrade to latest | `reader-cli upgrade` |
+| Show help | `reader-cli --help` |
 
 ---
 
@@ -109,28 +109,28 @@ Run `slax-reader-cli --help` for the full overview.
 
 - **Do I need to install anything besides Node.js?**
 
-  No. The CLI is a single npm package (`@slax-lab/slax-reader-cli`) with zero native dependencies. Node.js ≥ 18 is the only prerequisite.
+  No. The CLI is a single npm package (`@slax-lab/reader-cli`) with zero native dependencies. Node.js ≥ 18 is the only prerequisite.
 
 - **Where is my API Key stored?**
 
-  Locally in your system config directory (managed by the [conf](https://github.com/sindresorhus/conf) library). Run `slax-reader-cli whoami` to see the config path. Your key never leaves your machine except when making API calls to Slax Reader.
+  Locally in your system config directory (managed by the [conf](https://github.com/sindresorhus/conf) library). Run `reader-cli whoami` to see the config path. Your key never leaves your machine except when making API calls to Slax Reader.
 
-- **`command not found: slax-reader-cli` after install?**
+- **`command not found: reader-cli` after install?**
 
   Your npm global bin directory may not be in your PATH. Run `npm root -g` to find the global directory, then add its parent `bin/` folder to your PATH.
 
 - **Can my AI Agent save bookmarks without me approving each one?**
 
-  That depends on your agent's permission model. Claude Code, for example, will ask before running shell commands unless you've pre-approved them. You can add `slax-reader-cli` to your agent's allowed commands for a smoother experience.
+  That depends on your agent's permission model. Claude Code, for example, will ask before running shell commands unless you've pre-approved them. You can add `reader-cli` to your agent's allowed commands for a smoother experience.
 
 - **Does the CLI work with self-hosted Slax Reader instances?**
 
-  Yes. Use `slax-reader-cli login --api-base https://your-instance.com` to point the CLI to your own server.
+  Yes. Use `reader-cli login --api-base https://your-instance.com` to point the CLI to your own server.
 
 - **How do I use this with multiple accounts?**
 
-  Currently the CLI stores one API Key at a time. To switch accounts, run `slax-reader-cli logout` followed by `slax-reader-cli login` with the other account's key.
+  Currently the CLI stores one API Key at a time. To switch accounts, run `reader-cli logout` followed by `reader-cli login` with the other account's key.
 
 - **How do I get help?**
 
-  Run `slax-reader-cli --help` for command overview, or visit the [GitHub repo](https://github.com/slax-lab/slax-reader-cli) to open an issue.
+  Run `reader-cli --help` for command overview, or visit the [GitHub repo](https://github.com/slax-lab/slax-reader-cli) to open an issue.

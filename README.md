@@ -4,7 +4,7 @@
 
 **Save anything to your Slax Reader library from the command line — or let your AI Agent do it.**
 
-[![npm version](https://img.shields.io/npm/v/@slax-lab/slax-reader-cli)](https://www.npmjs.com/package/@slax-lab/slax-reader-cli)
+[![npm version](https://img.shields.io/npm/v/@slax-lab/reader-cli)](https://www.npmjs.com/package/@slax-lab/reader-cli)
 [![Node ≥ 18](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -37,15 +37,15 @@
 ### Installation
 
 ```bash
-npm install -g @slax-lab/slax-reader-cli
+npm install -g @slax-lab/reader-cli
 # or
-pnpm add -g @slax-lab/slax-reader-cli
+pnpm add -g @slax-lab/reader-cli
 ```
 
 Verify:
 
 ```bash
-slax-reader-cli --version
+reader-cli --version
 ```
 
 ### Get Your API Key
@@ -58,13 +58,13 @@ slax-reader-cli --version
 
 ```bash
 # Log in
-slax-reader-cli login
+reader-cli login
 
 # Save a bookmark
-slax-reader-cli add https://example.com
+reader-cli add https://example.com
 
 # Save with metadata
-slax-reader-cli add https://example.com \
+reader-cli add https://example.com \
   --title "My Article" \
   --description "Worth reading later" \
   --tags "tech,ai" \
@@ -73,7 +73,7 @@ slax-reader-cli add https://example.com \
 
 ### Command Reference
 
-#### `slax-reader-cli login`
+#### `reader-cli login`
 
 Authenticate with your API Key.
 
@@ -82,11 +82,11 @@ Authenticate with your API Key.
 | `--api-key <key>` | API Key (starts with `sr-`). Prompted interactively if omitted. |
 | `--api-base <url>` | Custom API base URL (for self-hosted instances). |
 
-#### `slax-reader-cli logout`
+#### `reader-cli logout`
 
 Clear stored credentials from local config.
 
-#### `slax-reader-cli whoami`
+#### `reader-cli whoami`
 
 Display current user information.
 
@@ -98,7 +98,7 @@ Current User:
   API Key  : sr-xxxxxxx...
 ```
 
-#### `slax-reader-cli add <url>`
+#### `reader-cli add <url>`
 
 Save a URL as a bookmark.
 
@@ -112,12 +112,12 @@ Save a URL as a bookmark.
 Examples:
 
 ```bash
-slax-reader-cli add https://example.com
-slax-reader-cli add https://example.com --title "Example" --tags "reading,ai"
-slax-reader-cli add https://example.com --archive
+reader-cli add https://example.com
+reader-cli add https://example.com --title "Example" --tags "reading,ai"
+reader-cli add https://example.com --archive
 ```
 
-#### `slax-reader-cli upgrade`
+#### `reader-cli upgrade`
 
 Upgrade the CLI to the latest version. Automatically detects pnpm or npm.
 
@@ -125,7 +125,7 @@ Upgrade the CLI to the latest version. Automatically detects pnpm or npm.
 |--------|-------------|
 | `--check` | Check for a newer version only; do not install |
 
-#### `slax-reader-cli --help`
+#### `reader-cli --help`
 
 Show full usage and all available commands.
 
@@ -149,24 +149,24 @@ Supports: **Claude Code** · **Claude Desktop** · **OpenAI Codex** · **Gemini 
 <summary>Already installed? Add this to your agent's system prompt</summary>
 
 ```
-You have access to the `slax-reader-cli` CLI for saving bookmarks to Slax Reader.
+You have access to the `reader-cli` CLI for saving bookmarks to Slax Reader.
 
 Available commands:
 
-  slax-reader-cli add <url> [options]    Save a URL as a bookmark
+  reader-cli add <url> [options]    Save a URL as a bookmark
     -t, --title <title>              Custom title
     -d, --description <desc>         Short description
     --tags <tags>                    Comma-separated tags, e.g. "tech,news"
     --archive                        Enable archive mode
 
-  slax-reader-cli whoami                 Show current user
-  slax-reader-cli logout                 Clear credentials
-  slax-reader-cli upgrade                Update to latest version
-  slax-reader-cli --help                 Full usage
+  reader-cli whoami                 Show current user
+  reader-cli logout                 Clear credentials
+  reader-cli upgrade                Update to latest version
+  reader-cli --help                 Full usage
 
 Notes:
 - URLs without http(s):// are auto-prefixed with https://
-- If you get an auth error, ask the user to run: slax-reader-cli login
+- If you get an auth error, ask the user to run: reader-cli login
 ```
 
 </details>

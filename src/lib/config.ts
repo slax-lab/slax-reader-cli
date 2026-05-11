@@ -6,7 +6,7 @@ interface ConfigSchema {
 }
 
 const config = new Conf<ConfigSchema>({
-  projectName: 'slax-reader-cli',
+  projectName: 'reader-cli',
   defaults: {
     apiKey: '',
     apiBase: 'https://api-reader.slax.com',

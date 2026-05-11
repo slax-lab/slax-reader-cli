@@ -69,7 +69,7 @@ export function registerAuthCommands(program: Command): void {
     .action(async () => {
       const key = getApiKey()
       if (!key) {
-        console.log(chalk.yellow('Not logged in. Run `slax-reader-cli login` first.'))
+        console.log(chalk.yellow('Not logged in. Run `reader-cli login` first.'))
         process.exit(1)
       }
 

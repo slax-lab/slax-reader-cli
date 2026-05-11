@@ -4,7 +4,7 @@
 
 **从命令行将任意内容保存到 Slax Reader，也可以让你的 AI Agent 来做这件事。**
 
-[![npm version](https://img.shields.io/npm/v/@slax-lab/slax-reader-cli)](https://www.npmjs.com/package/@slax-lab/slax-reader-cli)
+[![npm version](https://img.shields.io/npm/v/@slax-lab/reader-cli)](https://www.npmjs.com/package/@slax-lab/reader-cli)
 [![Node ≥ 18](https://img.shields.io/badge/node-%3E%3D18-brightgreen)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
@@ -37,15 +37,15 @@
 ### 安装
 
 ```bash
-npm install -g @slax-lab/slax-reader-cli
+npm install -g @slax-lab/reader-cli
 # 或
-pnpm add -g @slax-lab/slax-reader-cli
+pnpm add -g @slax-lab/reader-cli
 ```
 
 验证安装：
 
 ```bash
-slax-reader-cli --version
+reader-cli --version
 ```
 
 ### 获取 API Key
@@ -58,13 +58,13 @@ slax-reader-cli --version
 
 ```bash
 # 登录
-slax-reader-cli login
+reader-cli login
 
 # 收藏书签
-slax-reader-cli add https://example.com
+reader-cli add https://example.com
 
 # 带元数据收藏
-slax-reader-cli add https://example.com \
+reader-cli add https://example.com \
   --title "我的文章" \
   --description "值得稍后阅读" \
   --tags "技术,AI" \
@@ -73,7 +73,7 @@ slax-reader-cli add https://example.com \
 
 ### 命令参考
 
-#### `slax-reader-cli login`
+#### `reader-cli login`
 
 使用 API Key 进行身份验证。
 
@@ -82,11 +82,11 @@ slax-reader-cli add https://example.com \
 | `--api-key <key>` | API Key（以 `sr-` 开头）。省略时将交互式提示输入。 |
 | `--api-base <url>` | 自定义 API 地址（用于私有部署）。 |
 
-#### `slax-reader-cli logout`
+#### `reader-cli logout`
 
 清除本地存储的身份凭证。
 
-#### `slax-reader-cli whoami`
+#### `reader-cli whoami`
 
 显示当前登录用户信息。
 
@@ -98,7 +98,7 @@ Current User:
   API Key  : sr-xxxxxxx...
 ```
 
-#### `slax-reader-cli add <url>`
+#### `reader-cli add <url>`
 
 将 URL 保存为书签。
 
@@ -112,12 +112,12 @@ Current User:
 示例：
 
 ```bash
-slax-reader-cli add https://example.com
-slax-reader-cli add https://example.com --title "示例" --tags "阅读,AI"
-slax-reader-cli add https://example.com --archive
+reader-cli add https://example.com
+reader-cli add https://example.com --title "示例" --tags "阅读,AI"
+reader-cli add https://example.com --archive
 ```
 
-#### `slax-reader-cli upgrade`
+#### `reader-cli upgrade`
 
 升级 CLI 到最新版本，自动检测 pnpm 或 npm。
 
@@ -125,7 +125,7 @@ slax-reader-cli add https://example.com --archive
 |------|------|
 | `--check` | 仅检查是否有新版本，不安装 |
 
-#### `slax-reader-cli --help`
+#### `reader-cli --help`
 
 显示完整的使用说明和所有可用命令。
 
@@ -149,24 +149,24 @@ slax-reader-cli add https://example.com --archive
 <summary>已安装？将此 System Prompt 添加到你的 Agent 配置中</summary>
 
 ```
-你可以使用 `slax-reader-cli` CLI 将书签保存到 Slax Reader。
+你可以使用 `reader-cli` CLI 将书签保存到 Slax Reader。
 
 可用命令：
 
-  slax-reader-cli add <url> [选项]       将 URL 保存为书签
+  reader-cli add <url> [选项]       将 URL 保存为书签
     -t, --title <title>              自定义标题
     -d, --description <desc>         简短描述
     --tags <tags>                    逗号分隔的标签，例如 "技术,新闻"
     --archive                        启用归档模式
 
-  slax-reader-cli whoami                 显示当前用户
-  slax-reader-cli logout                 清除凭证
-  slax-reader-cli upgrade                升级到最新版本
-  slax-reader-cli --help                 完整使用说明
+  reader-cli whoami                 显示当前用户
+  reader-cli logout                 清除凭证
+  reader-cli upgrade                升级到最新版本
+  reader-cli --help                 完整使用说明
 
 注意：
 - 不带 http(s):// 的 URL 会自动补全为 https://
-- 如果遇到身份验证错误，请提示用户执行：slax-reader-cli login
+- 如果遇到身份验证错误，请提示用户执行：reader-cli login
 ```
 
 </details>

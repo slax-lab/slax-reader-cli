@@ -4,7 +4,7 @@
 
 ## Overview
 
-`slax-reader-cli` is a CLI tool for saving bookmarks to [Slax Reader](https://reader.slax.com). Package name: `@slax-lab/slax-reader-cli`.
+`reader-cli` is a CLI tool for saving bookmarks to [Slax Reader](https://reader.slax.com). Package name: `@slax-lab/reader-cli`.
 
 ## Step 1: Check Environment
 
@@ -19,19 +19,19 @@ If Node.js is not installed or the version is below 18, inform the user and stop
 ## Step 2: Install the CLI
 
 ```bash
-npm install -g @slax-lab/slax-reader-cli
+npm install -g @slax-lab/reader-cli
 ```
 
 Or if pnpm is available:
 
 ```bash
-pnpm add -g @slax-lab/slax-reader-cli
+pnpm add -g @slax-lab/reader-cli
 ```
 
 ## Step 3: Verify Installation
 
 ```bash
-slax-reader-cli --version
+reader-cli --version
 ```
 
 Expected output: a version number like `0.1.0`. If the command is not found, the installation failed.
@@ -43,13 +43,13 @@ Ask the user for their API Key. They can obtain one from [Slax Reader → Settin
 API Keys start with `sr-`. Run:
 
 ```bash
-slax-reader-cli login --api-key <the-key-provided-by-user>
+reader-cli login --api-key <the-key-provided-by-user>
 ```
 
 Verify login:
 
 ```bash
-slax-reader-cli whoami
+reader-cli whoami
 ```
 
 This should display the user's username and email. If it fails, the API Key is invalid — ask the user to double-check.
@@ -59,25 +59,25 @@ This should display the user's username and email. If it fails, the API Key is i
 Add the following to your agent's system prompt, rules file, `CLAUDE.md`, or `GEMINI.md` so you can use the tool in future sessions:
 
 ```
-You have access to the `slax-reader-cli` CLI for saving bookmarks to Slax Reader.
+You have access to the `reader-cli` CLI for saving bookmarks to Slax Reader.
 
 Available commands:
 
-  slax-reader-cli add <url> [options]    Save a URL as a bookmark
+  reader-cli add <url> [options]    Save a URL as a bookmark
     -t, --title <title>              Custom title
     -d, --description <desc>         Short description
     --tags <tags>                    Comma-separated tags, e.g. "tech,news"
     --archive                        Enable archive mode
 
-  slax-reader-cli whoami                 Show current user
-  slax-reader-cli logout                 Clear credentials
-  slax-reader-cli upgrade                Update to latest version
-  slax-reader-cli upgrade --check        Check for updates only
-  slax-reader-cli --help                 Full usage
+  reader-cli whoami                 Show current user
+  reader-cli logout                 Clear credentials
+  reader-cli upgrade                Update to latest version
+  reader-cli upgrade --check        Check for updates only
+  reader-cli --help                 Full usage
 
 Notes:
 - URLs without http(s):// are auto-prefixed with https://
-- If you get an auth error, ask the user to run: slax-reader-cli login
+- If you get an auth error, ask the user to run: reader-cli login
 ```
 
 ### Per-Tool Configuration Reference
@@ -90,9 +90,9 @@ Add to your project's `CLAUDE.md`:
 ```markdown
 ## Bookmark Tool
 
-You have access to the `slax-reader-cli` CLI. When the user asks to save a link or bookmark something, run:
+You have access to the `reader-cli` CLI. When the user asks to save a link or bookmark something, run:
 
-  slax-reader-cli add <url> [--title "..."] [--tags "tag1,tag2"]
+  reader-cli add <url> [--title "..."] [--tags "tag1,tag2"]
 ```
 
 No other setup needed — Claude Code can run shell commands directly.
@@ -109,7 +109,7 @@ Edit `claude_desktop_config.json`:
 
 ```json
 {
-  "systemPrompt": "You have access to the `slax-reader-cli` CLI via bash. When the user asks to save a bookmark, run: slax-reader-cli add <url> [--title \"...\"] [--tags \"tag1,tag2\"]. Confirm with the user before saving."
+  "systemPrompt": "You have access to the `reader-cli` CLI via bash. When the user asks to save a bookmark, run: reader-cli add <url> [--title \"...\"] [--tags \"tag1,tag2\"]. Confirm with the user before saving."
 }
 ```
 
@@ -121,11 +121,11 @@ Edit `claude_desktop_config.json`:
 Add to your Codex system prompt:
 
 ```
-You have access to a shell. Use the `slax-reader-cli` CLI to save bookmarks:
+You have access to a shell. Use the `reader-cli` CLI to save bookmarks:
 
-  slax-reader-cli add <url> [--title "..."] [--description "..."] [--tags "tag1,tag2"] [--archive]
+  reader-cli add <url> [--title "..."] [--description "..."] [--tags "tag1,tag2"] [--archive]
 
-Confirm the URL with the user before saving. If not authenticated, ask the user to run `slax-reader-cli login`.
+Confirm the URL with the user before saving. If not authenticated, ask the user to run `reader-cli login`.
 ```
 
 </details>
@@ -138,10 +138,10 @@ Add to `~/.gemini/system_prompt.md` or your project's `GEMINI.md`:
 ```markdown
 ## Bookmark Tool
 
-You have access to the `slax-reader-cli` CLI. Use it to save URLs as bookmarks.
+You have access to the `reader-cli` CLI. Use it to save URLs as bookmarks.
 
 Shell usage:
-  !slax-reader-cli add <url> [--title "..."] [--tags "tag1,tag2"]
+  !reader-cli add <url> [--title "..."] [--tags "tag1,tag2"]
 ```
 
 </details>
@@ -149,16 +149,16 @@ Shell usage:
 <details>
 <summary><strong>OpenClaw</strong></summary>
 
-Create `~/.openclaw/skills/slax-reader-cli.yaml`:
+Create `~/.openclaw/skills/reader-cli.yaml`:
 
 ```yaml
-name: slax-reader-cli
+name: reader-cli
 description: Save URLs as bookmarks to Slax Reader
 version: "1.0"
 commands:
   - name: add_bookmark
     description: Save a URL to Slax Reader
-    shell: "slax-reader-cli add {url}{title_flag}{tags_flag}"
+    shell: "reader-cli add {url}{title_flag}{tags_flag}"
     parameters:
       url:
         type: string
@@ -184,12 +184,12 @@ Add to `.cursorrules` (Cursor) or `.windsurfrules` (Windsurf):
 ```
 ## Bookmark Tool
 
-You have access to the `slax-reader-cli` CLI via the terminal. When the user asks to save a link:
+You have access to the `reader-cli` CLI via the terminal. When the user asks to save a link:
 
-1. Run: slax-reader-cli add <url> [--title "..."] [--tags "tag1,tag2"]
+1. Run: reader-cli add <url> [--title "..."] [--tags "tag1,tag2"]
 2. Confirm success with the user.
 
-If you get an auth error, ask the user to run: slax-reader-cli login
+If you get an auth error, ask the user to run: reader-cli login
 ```
 
 </details>
@@ -199,7 +199,7 @@ If you get an auth error, ask the user to run: slax-reader-cli login
 Run a quick test to confirm everything works:
 
 ```bash
-slax-reader-cli add https://github.com/slax-lab/slax-reader-cli --title "Slax Reader CLI" --tags "tool,cli"
+reader-cli add https://github.com/slax-lab/slax-reader-cli --title "Slax Reader CLI" --tags "tool,cli"
 ```
 
 If the bookmark is added successfully, the setup is complete. Tell the user they're all set.
@@ -208,10 +208,10 @@ If the bookmark is added successfully, the setup is complete. Tell the user they
 
 | Problem | Solution |
 |---------|----------|
-| `command not found: slax-reader-cli` | Reinstall: `npm install -g @slax-lab/slax-reader-cli` |
+| `command not found: reader-cli` | Reinstall: `npm install -g @slax-lab/reader-cli` |
 | `Invalid API Key` | Verify the key starts with `sr-` and re-login |
-| `Network error` | Check internet connectivity; try `slax-reader-cli whoami` |
-| Permission denied on global install | Use `sudo npm install -g @slax-lab/slax-reader-cli` or fix npm permissions |
+| `Network error` | Check internet connectivity; try `reader-cli whoami` |
+| Permission denied on global install | Use `sudo npm install -g @slax-lab/reader-cli` or fix npm permissions |
 
 ---
 

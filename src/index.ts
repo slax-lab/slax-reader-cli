@@ -10,7 +10,7 @@ declare const __VERSION__: string
 const program = new Command()
 
 program
-  .name('slax-reader-cli')
+  .name('reader-cli')
   .description('Slax Reader API client CLI - manage bookmarks from the command line')
   .version(__VERSION__, '-v, --version')
 
@@ -26,7 +26,7 @@ program.hook('postAction', async () => {
     if (newer) {
       console.log()
       console.log(chalk.yellow(`  Update available: v${__VERSION__} → v${newer}`))
-      console.log(chalk.dim(`  Run \`slax-reader-cli upgrade\` to update`))
+      console.log(chalk.dim(`  Run \`reader-cli upgrade\` to update`))
       console.log()
     }
   } catch {
