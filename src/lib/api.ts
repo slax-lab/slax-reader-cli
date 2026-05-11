@@ -2,6 +2,8 @@ import chalk from 'chalk'
 import { getApiKey, getApiBase } from './config.js'
 import type { ApiResponse } from '../types.js'
 
+const API_TIMEOUT_MS = 10000
+
 export class ApiError extends Error {
   constructor(
     public readonly statusCode: number,
@@ -46,25 +48,39 @@ export async function request<T = unknown>(
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined,
+    signal: AbortSignal.timeout(API_TIMEOUT_MS),
   })
 
   const json = (await res.json()) as ApiResponse<T>
 
   if (!res.ok || (json.code && json.code >= 400)) {
     const code = json.code ?? res.status
-    const msg = json.message || json.data || res.statusText
-    throw new ApiError(res.status, code, String(msg))
+    const msg = json.message || apiResponseFallbackMessage(json.data) || res.statusText
+    throw new ApiError(res.status, code, msg)
   }
 
   return json.data
 }
 
+function apiResponseFallbackMessage(data: unknown): string | undefined {
+  if (typeof data === 'string') return data
+  if (data == null) return undefined
+  return JSON.stringify(data)
+}
+
+function isNetworkError(err: unknown): boolean {
+  return err instanceof Error && (
+    err.message.includes('fetch failed') ||
+    err.message.includes('ECONNREFUSED') ||
+    err.message.includes('The operation was aborted') ||
+    err.name === 'TimeoutError'
+  )
+}
+
 export function apiErrorCode(err: unknown): string {
   if (err instanceof MissingApiKeyError) return 'not_logged_in'
   if (err instanceof ApiError) return `api_${err.apiCode}`
-  if (err instanceof Error && (err.message.includes('fetch failed') || err.message.includes('ECONNREFUSED'))) {
-    return 'network_error'
-  }
+  if (isNetworkError(err)) return 'network_error'
   return 'unknown_error'
 }
 
@@ -81,7 +97,7 @@ export function apiErrorMessage(err: unknown): string {
     }
   }
   if (err instanceof Error) {
-    if (err.message.includes('fetch failed') || err.message.includes('ECONNREFUSED')) {
+    if (isNetworkError(err)) {
       return 'Network error. Please check your connection.'
     }
     return `Error: ${err.message}`

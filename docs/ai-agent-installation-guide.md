@@ -1,6 +1,6 @@
 # Slax Reader CLI — AI Agent Installation Guide
 
-> This document is intended for AI Agents. If you are a human, please refer to the [README](../../README.md) for manual installation instructions.
+> This document is intended for AI Agents. If you are a human, please refer to the [README](../README.md) for manual installation instructions.
 
 ## Overview
 
@@ -102,16 +102,7 @@ No other setup needed — Claude Code can run shell commands directly.
 <details>
 <summary><strong>Claude Desktop</strong></summary>
 
-Edit `claude_desktop_config.json`:
-
-- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-
-```json
-{
-  "systemPrompt": "You have access to the `reader-cli` CLI via bash. When the user asks to save a bookmark, run: reader-cli add <url> [--title \"...\"] [--tags \"tag1,tag2\"]. Confirm with the user before saving."
-}
-```
+Claude Desktop does not read project shell instructions from `claude_desktop_config.json`. For Claude Desktop, paste the general agent instruction above into the conversation when needed, or keep it in a project `CLAUDE.md` / shared note that you can provide at session start.
 
 </details>
 

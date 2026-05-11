@@ -1,6 +1,6 @@
 # Slax Reader CLI — AI Agent 安装指南
 
-> 本文档面向 AI Agent。如果你是人类用户，请参阅 [README](../../README.zh.md) 获取手动安装说明。
+> 本文档面向 AI Agent。如果你是人类用户，请参阅 [README](../README.zh.md) 获取手动安装说明。
 
 ## 概述
 
@@ -102,16 +102,7 @@ reader-cli whoami
 <details>
 <summary><strong>Claude Desktop</strong></summary>
 
-编辑 `claude_desktop_config.json`：
-
-- macOS：`~/Library/Application Support/Claude/claude_desktop_config.json`
-- Windows：`%APPDATA%\Claude\claude_desktop_config.json`
-
-```json
-{
-  "systemPrompt": "你可以通过 bash 使用 `reader-cli` CLI。当用户要求收藏书签时，执行：reader-cli add <url> [--title \"...\"] [--tags \"标签1,标签2\"]。执行前请与用户确认。"
-}
-```
+Claude Desktop 不会从 `claude_desktop_config.json` 读取项目级 Shell 使用说明。对于 Claude Desktop，请在需要时将上面的通用 Agent 指令粘贴到对话中，或将其保存在项目 `CLAUDE.md` / 共享说明里，在新会话开始时提供。
 
 </details>
 
