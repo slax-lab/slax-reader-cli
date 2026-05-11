@@ -13,11 +13,17 @@ export class ApiError extends Error {
   }
 }
 
+export class MissingApiKeyError extends Error {
+  constructor() {
+    super('Not logged in. Run `reader-cli login` first.')
+    this.name = 'MissingApiKeyError'
+  }
+}
+
 function ensureApiKey(): string {
   const key = getApiKey()
   if (!key) {
-    console.error(chalk.red('Not logged in. Run `reader-cli login` first.'))
-    process.exit(1)
+    throw new MissingApiKeyError()
   }
   return key
 }
@@ -53,26 +59,37 @@ export async function request<T = unknown>(
   return json.data
 }
 
-export function handleApiError(err: unknown): never {
+export function apiErrorCode(err: unknown): string {
+  if (err instanceof MissingApiKeyError) return 'not_logged_in'
+  if (err instanceof ApiError) return `api_${err.apiCode}`
+  if (err instanceof Error && (err.message.includes('fetch failed') || err.message.includes('ECONNREFUSED'))) {
+    return 'network_error'
+  }
+  return 'unknown_error'
+}
+
+export function apiErrorMessage(err: unknown): string {
+  if (err instanceof MissingApiKeyError) return err.message
   if (err instanceof ApiError) {
     switch (err.statusCode) {
       case 401:
-        console.error(chalk.red('Invalid API Key. Run `reader-cli login` to update.'))
-        break
+        return 'Invalid API Key. Run `reader-cli login` to update.'
       case 403:
-        console.error(chalk.red('Permission denied. Your subscription may be expired.'))
-        break
+        return 'Permission denied. Your subscription may be expired.'
       default:
-        console.error(chalk.red(`API error (${err.apiCode}): ${err.message}`))
+        return `API error (${err.apiCode}): ${err.message}`
     }
-  } else if (err instanceof Error) {
-    if (err.message.includes('fetch failed') || err.message.includes('ECONNREFUSED')) {
-      console.error(chalk.red('Network error. Please check your connection.'))
-    } else {
-      console.error(chalk.red(`Error: ${err.message}`))
-    }
-  } else {
-    console.error(chalk.red('An unknown error occurred.'))
   }
+  if (err instanceof Error) {
+    if (err.message.includes('fetch failed') || err.message.includes('ECONNREFUSED')) {
+      return 'Network error. Please check your connection.'
+    }
+    return `Error: ${err.message}`
+  }
+  return 'An unknown error occurred.'
+}
+
+export function handleApiError(err: unknown): never {
+  console.error(chalk.red(apiErrorMessage(err)))
   process.exit(1)
 }

@@ -1,3 +1,4 @@
+import path from 'node:path'
 import Conf from 'conf'
 
 interface ConfigSchema {
@@ -35,4 +36,8 @@ export function setApiBase(base: string): void {
 
 export function getConfigPath(): string {
   return config.path
+}
+
+export function getConfigDir(): string {
+  return path.dirname(config.path)
 }
