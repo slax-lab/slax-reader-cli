@@ -1,6 +1,6 @@
 import semver from 'semver'
 
-const PACKAGE_NAME = '@slax-lab/reader-api'
+const PACKAGE_NAME = '@slax-lab/slax-reader-cli'
 
 interface NpmRegistryVersion {
   'dist-tags': {
