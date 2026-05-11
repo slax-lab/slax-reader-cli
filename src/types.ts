@@ -27,7 +27,7 @@ export interface AddBookmarkReq {
   target_url: string
   target_title: string
   target_icon: string
-  taget_cover: string
+  target_cover: string
   content: string
   description: string
   tag: string[]
