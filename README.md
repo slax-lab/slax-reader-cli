@@ -133,238 +133,43 @@ Show full usage and all available commands.
 
 ## AI Agent Integration
 
-Any AI Agent that can run shell commands can drive `slax-reader`. Install once globally, paste the system prompt below into your agent's configuration, and it's ready.
+Let your AI Agent install and configure everything for you. Copy the prompt below and send it to your AI Agent (Claude Code, Codex, Gemini CLI, Cursor, OpenClaw, etc.):
 
-### Universal System Prompt
+### Install via AI Agent
 
-Copy this into your agent's system prompt, rules file, or `CLAUDE.md` / `GEMINI.md`:
+```
+Help me install and set up Slax Reader CLI: https://github.com/slax-lab/slax-reader-cli/blob/main/docs/ai-agent-installation-guide.md
+```
+
+> Your agent will read the guide, install the CLI, walk you through authentication, and configure itself to use the bookmark tool — all automatically.
+
+Supports: **Claude Code** · **Claude Desktop** · **OpenAI Codex** · **Gemini CLI** · **OpenClaw** · **Cursor** · **Windsurf**
+
+<details>
+<summary>Already installed? Add this to your agent's system prompt</summary>
 
 ```
 You have access to the `slax-reader` CLI for saving bookmarks to Slax Reader.
 
-Authentication: the user must have run `slax-reader login` once. API keys start with `sr-`.
-
 Available commands:
 
-  slax-reader add <url> [options]
-    Save a URL as a bookmark.
-    Options:
-      -t, --title <title>       Custom title (defaults to page title)
-      -d, --description <desc>  Short description
-      --tags <tags>             Comma-separated tags, e.g. "tech,news"
-      --archive                 Enable archive mode
+  slax-reader add <url> [options]    Save a URL as a bookmark
+    -t, --title <title>              Custom title
+    -d, --description <desc>         Short description
+    --tags <tags>                    Comma-separated tags, e.g. "tech,news"
+    --archive                        Enable archive mode
 
-  slax-reader whoami            Show current logged-in user
-  slax-reader logout            Clear stored credentials
-  slax-reader upgrade           Update CLI to latest version
-  slax-reader upgrade --check   Check for update without installing
-  slax-reader --help            Full usage
+  slax-reader whoami                 Show current user
+  slax-reader logout                 Clear credentials
+  slax-reader upgrade                Update to latest version
+  slax-reader --help                 Full usage
 
-Usage notes:
-- URLs without http(s):// are treated as https://
-- Tags must be comma-separated with no spaces around commas
-- Run `slax-reader login` if you receive an authentication error
+Notes:
+- URLs without http(s):// are auto-prefixed with https://
+- If you get an auth error, ask the user to run: slax-reader login
 ```
 
----
-
-### Claude Code
-
-Claude Code can invoke `slax-reader` directly as a shell command — no extra configuration required.
-
-**1. Install the CLI:**
-
-```bash
-npm install -g @slax-lab/reader-api
-```
-
-**2. Log in once:**
-
-```bash
-slax-reader login
-```
-
-**3. Add the system prompt to your project's `CLAUDE.md`:**
-
-```markdown
-## Bookmark Tool
-
-You have access to the `slax-reader` CLI. When the user asks to save a link or bookmark something, run:
-
-  slax-reader add <url> [--title "..."] [--tags "tag1,tag2"]
-
-Ask the user for the URL if not provided. Confirm success after the command runs.
-```
-
-**Example interaction:**
-
-> User: "Save this article for me: https://example.com/ai-news"
-> Claude runs: `slax-reader add https://example.com/ai-news --tags "ai"`
-
----
-
-### Claude Desktop
-
-**1. Install and authenticate:**
-
-```bash
-npm install -g @slax-lab/reader-api && slax-reader login
-```
-
-**2. Edit `claude_desktop_config.json`:**
-
-- macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- Windows: `%APPDATA%\Claude\claude_desktop_config.json`
-
-Add a `systemPrompt` field (Claude Desktop supports shell execution via its built-in bash tool):
-
-```json
-{
-  "systemPrompt": "You have access to the `slax-reader` CLI via bash. When the user asks to save a bookmark, run: slax-reader add <url> [--title \"...\"] [--tags \"tag1,tag2\"]. Confirm with the user before saving."
-}
-```
-
-**Example:**
-
-> "Please save https://example.com to my reading list."
-> Claude runs: `slax-reader add https://example.com`
-
----
-
-### OpenAI Codex
-
-**1. Install and authenticate:**
-
-```bash
-npm install -g @slax-lab/reader-api && slax-reader login
-```
-
-**2. Add to your Codex system prompt:**
-
-```
-You have access to a shell. Use the `slax-reader` CLI to save bookmarks:
-
-  slax-reader add <url> [--title "..."] [--description "..."] [--tags "tag1,tag2"] [--archive]
-
-Always confirm the URL with the user before saving. If not authenticated, ask the user to run `slax-reader login`.
-```
-
-**Example shell tool call:**
-
-```json
-{
-  "type": "function",
-  "function": {
-    "name": "run_shell",
-    "arguments": {
-      "command": "slax-reader add https://example.com --title \"Example\" --tags \"reading\""
-    }
-  }
-}
-```
-
----
-
-### Gemini CLI
-
-**1. Install and authenticate:**
-
-```bash
-npm install -g @slax-lab/reader-api && slax-reader login
-```
-
-**2. Add to `~/.gemini/system_prompt.md`** (or your project's `GEMINI.md`):
-
-```markdown
-## Bookmark Tool
-
-You have access to the `slax-reader` CLI. Use it to save URLs as bookmarks when the user asks.
-
-Shell usage (prefix shell commands with `!`):
-  !slax-reader add <url> [--title "..."] [--tags "tag1,tag2"]
-
-Confirm with the user before saving.
-```
-
-**Example:**
-
-> User: "Bookmark this for me: https://example.com"
-> Gemini runs: `!slax-reader add https://example.com`
-
----
-
-### OpenClaw
-
-**1. Install and authenticate:**
-
-```bash
-npm install -g @slax-lab/reader-api && slax-reader login
-```
-
-**2. Create a skill file at `~/.openclaw/skills/slax-reader.yaml`:**
-
-```yaml
-name: slax-reader
-description: Save URLs as bookmarks to Slax Reader
-version: "1.0"
-commands:
-  - name: add_bookmark
-    description: Save a URL to Slax Reader
-    shell: "slax-reader add {url}{title_flag}{tags_flag}{archive_flag}"
-    parameters:
-      url:
-        type: string
-        description: The full URL to bookmark
-        required: true
-      title_flag:
-        type: string
-        description: ' --title "<title>"  or empty string'
-        required: false
-        default: ""
-      tags_flag:
-        type: string
-        description: ' --tags "tag1,tag2"  or empty string'
-        required: false
-        default: ""
-      archive_flag:
-        type: string
-        description: ' --archive  or empty string'
-        required: false
-        default: ""
-```
-
-**Example:**
-
-> User: "Save https://example.com with tag 'ai'"
-> OpenClaw runs: `slax-reader add https://example.com --tags "ai"`
-
----
-
-### Cursor / Windsurf
-
-**1. Install and authenticate:**
-
-```bash
-npm install -g @slax-lab/reader-api && slax-reader login
-```
-
-**2. Add to `.cursorrules`** (Cursor) or `.windsurfrules` (Windsurf) in your project root:
-
-```
-## Bookmark Tool
-
-You have access to the `slax-reader` CLI via the terminal. When the user asks to save or bookmark a link:
-
-1. Run: slax-reader add <url> [--title "..."] [--tags "tag1,tag2"]
-2. Confirm success with the user.
-
-If you get an authentication error, ask the user to run: slax-reader login
-```
-
-**Example:**
-
-> User: "Save this link: https://example.com"
-> Cursor runs in terminal: `slax-reader add https://example.com`
+</details>
 
 ---
 
