@@ -5,7 +5,7 @@ import { failure, printJson, success } from '../lib/output.js'
 import { readSkillStamp, writeSkillStamp, clearPendingSkill } from '../lib/skillscheck.js'
 import { execNpx } from '../lib/exec.js'
 
-const SKILLS_SOURCE = 'slax-lab/reader-cli'
+const SKILLS_SOURCE = 'slax-lab/slax-reader-cli'
 
 interface SkillOptions {
   check?: boolean
