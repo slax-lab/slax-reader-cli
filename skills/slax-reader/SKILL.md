@@ -30,7 +30,6 @@ Do not ask the user to paste an API key into the conversation unless they explic
 | Log in non-interactively | `reader-cli login --api-key <key> --json` |
 | Log in interactively | `reader-cli login` |
 | Log out | `reader-cli logout --json` |
-| Show account | `reader-cli whoami --json` |
 | Save URL | `reader-cli add <url> --json` |
 | Save with title | `reader-cli add <url> --title "Title" --json` |
 | Save with description | `reader-cli add <url> --description "Description" --json` |
