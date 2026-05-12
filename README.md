@@ -40,7 +40,7 @@
 **One-line setup** (installs CLI + AI Agent skill):
 
 ```bash
-npx @slax-lab/reader-cli install
+npx @slax-lab/reader-cli@latest install
 ```
 
 Verify:
@@ -128,7 +128,7 @@ Upgrade the CLI to the latest version.
 
 #### `reader-cli skill`
 
-Manage the AI Agent skill. The skill teaches your agent how to use the CLI and is installed automatically by `npx @slax-lab/reader-cli install`.
+Manage the AI Agent skill. The skill teaches your agent how to use the CLI and is installed automatically by `npx @slax-lab/reader-cli@latest install`.
 
 | Option | Description |
 |--------|-------------|
