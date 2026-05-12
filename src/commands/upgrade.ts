@@ -4,8 +4,7 @@ import ora from 'ora'
 import { execSync } from 'node:child_process'
 import { checkForUpdate, getLatestVersion } from '../lib/version.js'
 import { failure, printJson, success } from '../lib/output.js'
-
-const PACKAGE_NAME = '@slax-lab/reader-cli'
+import { detectPackageManager, buildInstallCommand } from '../lib/packageManager.js'
 
 interface UpgradeOptions {
   check?: boolean
@@ -50,7 +49,7 @@ export function registerUpgradeCommands(program: Command): void {
       }
 
       const pm = detectPackageManager()
-      const installCmd = getInstallCommand(pm, PACKAGE_NAME)
+      const installCmd = buildInstallCommand(pm)
 
       const installSpinner = opts.json ? null : ora(`Upgrading via ${pm}...`).start()
       try {
@@ -66,22 +65,4 @@ export function registerUpgradeCommands(program: Command): void {
         process.exit(1)
       }
     })
-}
-
-function detectPackageManager(): 'pnpm' | 'npm' {
-  try {
-    execSync('pnpm --version', { stdio: 'pipe' })
-    return 'pnpm'
-  } catch {
-    return 'npm'
-  }
-}
-
-function getInstallCommand(pm: 'pnpm' | 'npm', pkg: string): string {
-  switch (pm) {
-    case 'pnpm':
-      return `pnpm add -g ${pkg}@latest`
-    case 'npm':
-      return `npm install -g ${pkg}@latest`
-  }
 }

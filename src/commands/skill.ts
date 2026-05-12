@@ -1,20 +1,11 @@
-import { execFile } from 'node:child_process'
-import { promisify } from 'node:util'
 import { Command } from 'commander'
 import chalk from 'chalk'
 import ora from 'ora'
 import { failure, printJson, success } from '../lib/output.js'
 import { readSkillStamp, writeSkillStamp, clearPendingSkill } from '../lib/skillscheck.js'
+import { execNpx } from '../lib/exec.js'
 
-const execFileAsync = promisify(execFile)
 const SKILLS_SOURCE = 'slax-lab/reader-cli'
-
-function execNpx(args: string[], options: Parameters<typeof execFileAsync>[2]): ReturnType<typeof execFileAsync> {
-  if (process.platform === 'win32') {
-    return execFileAsync('cmd.exe', ['/d', '/s', '/c', 'npx.cmd', ...args], options)
-  }
-  return execFileAsync('npx', args, options)
-}
 
 interface SkillOptions {
   check?: boolean
