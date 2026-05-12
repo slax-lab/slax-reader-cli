@@ -29,8 +29,8 @@ export async function initSkillCheck(currentVersion: string): Promise<void> {
     current,
     target: currentVersion,
     message: current
-      ? `reader-cli skill out of sync (${current} → ${currentVersion}), run: reader-cli skill --sync`
-      : `reader-cli skill not installed, run: reader-cli skill --sync`,
+      ? `reader-cli skill out of sync (${current} → ${currentVersion}), run: reader-cli upgrade`
+      : `reader-cli skill not installed, run: reader-cli upgrade`,
   }
 }
 

@@ -136,7 +136,7 @@ reader-cli add https://example.com --archive
 | `--sync` | 安装或更新 skill，使其与当前 CLI 版本一致 |
 | `--force` | 强制重新安装，即使已同步 |
 
-升级 CLI 后，运行 `reader-cli skill --sync` 保持 skill 同步——或者让 Agent 在命令输出中看到 `_hints.skill` 字段时自动处理。
+升级 CLI 后，`reader-cli upgrade` 也会保持 skill 同步。当 Agent 在命令输出中看到 `_hints.upgrade` 或 `_hints.skill` 字段时，都应该提议同一个修复命令：`reader-cli upgrade`。
 
 #### `reader-cli --help`
 
@@ -164,9 +164,9 @@ Skill（`skills/slax-reader/SKILL.md`）会告诉 Agent 如何使用 CLI。安�
 
 - 了解所有可用命令和选项
 - 在有新版本时自动通知你（`_hints.upgrade`）
-- 在 skill 与 CLI 版本不同步时自动通知你（`_hints.skill`）并提议执行 `reader-cli skill --sync`
+- 在 skill 与 CLI 版本不同步时自动通知你（`_hints.skill`）并提议执行 `reader-cli upgrade`
 
-手动安装或更新 skill：
+按需手动安装或更新 skill：
 
 ```bash
 reader-cli skill --sync

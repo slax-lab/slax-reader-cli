@@ -30,6 +30,7 @@ Do not ask the user to paste an API key into the conversation unless they explic
 | Log in non-interactively | `reader-cli login --api-key <key> --json` |
 | Log in interactively | `reader-cli login` |
 | Log out | `reader-cli logout --json` |
+| Show account | `reader-cli whoami --json` |
 | Save URL | `reader-cli add <url> --json` |
 | Save with title | `reader-cli add <url> --title "Title" --json` |
 | Save with description | `reader-cli add <url> --description "Description" --json` |
@@ -59,15 +60,19 @@ When `_hints.upgrade` appears, finish the user's current request first. Then tel
 reader-cli upgrade
 ```
 
+`reader-cli upgrade` also syncs the AI Agent skill when needed.
+
 ### `_hints.skill`
 
-When `_hints.skill` appears, finish the user's current request first. Then tell the user the installed AI Agent skill is out of sync with the CLI and offer to run:
+When `_hints.skill` appears, finish the user's current request first. Then tell the user the installed AI Agent skill is out of sync with the CLI and offer the same repair command:
 
 ```bash
-reader-cli skill --sync
+reader-cli upgrade
 ```
 
-After syncing the skill, tell the user to start a new AI Agent session so the updated skill is loaded.
+After the skill is synced, tell the user to start a new AI Agent session so the updated skill is loaded.
+
+Use `reader-cli skill --sync --json` only as a direct manual fallback when `reader-cli upgrade` cannot be used.
 
 Do not silently ignore `_hints`.
 

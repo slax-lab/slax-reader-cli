@@ -5,6 +5,7 @@ import { execSync } from 'node:child_process'
 import { checkForUpdate, getLatestVersion } from '../lib/version.js'
 import { failure, printJson, success } from '../lib/output.js'
 import { buildInstallCommand } from '../lib/packageManager.js'
+import { syncSkillToVersion, type SkillSyncResult } from '../lib/skillSync.js'
 
 interface UpgradeOptions {
   check?: boolean
@@ -33,7 +34,22 @@ export function registerUpgradeCommands(program: Command): void {
 
       if (!newer) {
         spinner?.succeed(chalk.green(`Already up to date (v${currentVersion})`))
-        if (opts.json) printJson(success({ current: currentVersion, latest: latestVersion, updateAvailable: false }))
+
+        if (opts.check) {
+          if (opts.json) printJson(success({ current: currentVersion, latest: latestVersion, updateAvailable: false }))
+          return
+        }
+
+        const skillsResult = await syncSkill(currentVersion, opts)
+        if (opts.json) {
+          printJson(success({
+            current: currentVersion,
+            latest: latestVersion,
+            updateAvailable: false,
+            skillsAction: skillsResult.action,
+            ...(skillsResult.action === 'failed' ? { skillsWarning: skillsResult.error, skillsHint: skillsResult.hint } : {}),
+          }))
+        }
         return
       }
 
@@ -54,8 +70,15 @@ export function registerUpgradeCommands(program: Command): void {
       try {
         execSync(installCmd, { stdio: 'pipe' })
         installSpinner?.succeed(chalk.green(`Successfully upgraded to v${latestVersion}`))
+        const skillsResult = await syncSkill(latestVersion, opts)
         if (opts.json) {
-          printJson(success({ current: currentVersion, latest: latestVersion, upgraded: true }))
+          printJson(success({
+            current: currentVersion,
+            latest: latestVersion,
+            upgraded: true,
+            skillsAction: skillsResult.action,
+            ...(skillsResult.action === 'failed' ? { skillsWarning: skillsResult.error, skillsHint: skillsResult.hint } : {}),
+          }))
         }
       } catch {
         installSpinner?.fail('Upgrade failed')
@@ -64,4 +87,23 @@ export function registerUpgradeCommands(program: Command): void {
         process.exit(1)
       }
     })
+}
+
+async function syncSkill(currentVersion: string, opts: UpgradeOptions): Promise<SkillSyncResult> {
+  const spinner = opts.json ? null : ora('Syncing Slax Reader AI Agent skill...').start()
+  const result = await syncSkillToVersion(currentVersion)
+
+  if (result.action === 'in_sync') {
+    spinner?.succeed(chalk.green(`Skill is already in sync (v${currentVersion}).`))
+  } else if (result.action === 'synced') {
+    spinner?.succeed(chalk.green(`Skill synced for reader-cli v${currentVersion}.`))
+  } else {
+    spinner?.warn(chalk.yellow('Skill sync failed'))
+    if (!opts.json) {
+      console.error(chalk.red(result.error ?? 'Skill sync failed.'))
+      if (result.hint) console.error(chalk.dim(result.hint))
+    }
+  }
+
+  return result
 }

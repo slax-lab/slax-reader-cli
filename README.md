@@ -136,7 +136,7 @@ Manage the AI Agent skill. The skill teaches your agent how to use the CLI and i
 | `--sync` | Install or update the skill to match the current CLI version |
 | `--force` | Force reinstall even if already in sync |
 
-After upgrading the CLI, run `reader-cli skill --sync` to keep the skill in sync — or let your agent do it when it sees a `_hints.skill` field in command output.
+After upgrading the CLI, `reader-cli upgrade` also keeps the skill in sync. When your agent sees `_hints.upgrade` or `_hints.skill` in command output, it should offer the same repair command: `reader-cli upgrade`.
 
 #### `reader-cli --help`
 
@@ -164,9 +164,9 @@ The skill (`skills/slax-reader/SKILL.md`) teaches your agent how to use the CLI.
 
 - Know all available commands and options
 - Automatically notify you when a new CLI version is available (`_hints.upgrade`)
-- Automatically notify you when the skill is out of sync with the CLI (`_hints.skill`) and offer to run `reader-cli skill --sync`
+- Automatically notify you when the skill is out of sync with the CLI (`_hints.skill`) and offer to run `reader-cli upgrade`
 
-Install or update the skill manually:
+Install or update the skill manually if needed:
 
 ```bash
 reader-cli skill --sync
