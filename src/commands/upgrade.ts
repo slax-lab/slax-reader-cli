@@ -4,7 +4,7 @@ import ora from 'ora'
 import { execSync } from 'node:child_process'
 import { checkForUpdate, getLatestVersion } from '../lib/version.js'
 import { failure, printJson, success } from '../lib/output.js'
-import { detectPackageManager, buildInstallCommand } from '../lib/packageManager.js'
+import { buildInstallCommand } from '../lib/packageManager.js'
 
 interface UpgradeOptions {
   check?: boolean
@@ -48,15 +48,14 @@ export function registerUpgradeCommands(program: Command): void {
         return
       }
 
-      const pm = detectPackageManager()
-      const installCmd = buildInstallCommand(pm)
+      const installCmd = buildInstallCommand()
 
-      const installSpinner = opts.json ? null : ora(`Upgrading via ${pm}...`).start()
+      const installSpinner = opts.json ? null : ora('Upgrading...').start()
       try {
         execSync(installCmd, { stdio: 'pipe' })
         installSpinner?.succeed(chalk.green(`Successfully upgraded to v${latestVersion}`))
         if (opts.json) {
-          printJson(success({ current: currentVersion, latest: latestVersion, upgraded: true, packageManager: pm }))
+          printJson(success({ current: currentVersion, latest: latestVersion, upgraded: true }))
         }
       } catch {
         installSpinner?.fail('Upgrade failed')

@@ -107,10 +107,6 @@ Code Review 或调试过程中，Agent 找到了相关文档、Stack Overflow �
 
 ## 常见问题
 
-- **除了 Node.js 还需要装别的吗？**
-
-  不需要。CLI 是一个纯 npm 包（`@slax-lab/reader-cli`），没有原生依赖。唯一前置条件是 Node.js ≥ 18。
-
 - **API Key 存在哪里？**
 
   存在你本地的系统配置目录（由 [conf](https://github.com/sindresorhus/conf) 库管理）。运行 `reader-cli whoami` 可以看到配置文件路径。你的密钥除了调用 Slax Reader API 外不会离开你的机器。

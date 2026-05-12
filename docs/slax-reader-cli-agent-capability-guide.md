@@ -107,10 +107,6 @@ Run `reader-cli --help` for the full overview.
 
 ## FAQ
 
-- **Do I need to install anything besides Node.js?**
-
-  No. The CLI is a single npm package (`@slax-lab/reader-cli`) with zero native dependencies. Node.js ≥ 18 is the only prerequisite.
-
 - **Where is my API Key stored?**
 
   Locally in your system config directory (managed by the [conf](https://github.com/sindresorhus/conf) library). Run `reader-cli whoami` to see the config path. Your key never leaves your machine except when making API calls to Slax Reader.

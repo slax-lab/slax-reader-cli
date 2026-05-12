@@ -5,7 +5,7 @@ import ora from 'ora'
 import { failure, printJson, success } from '../lib/output.js'
 import { writeSkillStamp, clearPendingSkill } from '../lib/skillscheck.js'
 import { execNpx } from '../lib/exec.js'
-import { detectPackageManager, buildInstallCommand } from '../lib/packageManager.js'
+import { buildInstallCommand } from '../lib/packageManager.js'
 
 const SKILLS_SOURCE = 'slax-lab/slax-reader-cli'
 
@@ -25,46 +25,22 @@ export function registerInstallCommand(program: Command, currentVersion: string)
 
 async function runInstall(currentVersion: string, opts: InstallOptions): Promise<void> {
   // Step 1: globally install the CLI
-  // Try pnpm first if available, fall back to npm if pnpm global install fails
-  // (pnpm may be installed but not configured for global installs)
-  const preferredPm = detectPackageManager()
-  let pm = preferredPm
-  let installCmd = buildInstallCommand(pm)
+  const installCmd = buildInstallCommand()
 
-  const cliSpinner = opts.json ? null : ora(`Installing @slax-lab/reader-cli via ${pm}...`).start()
+  const cliSpinner = opts.json ? null : ora('Installing @slax-lab/reader-cli...').start()
   try {
     execSync(installCmd, { stdio: 'pipe' })
-    cliSpinner?.succeed(chalk.green(`@slax-lab/reader-cli installed globally via ${pm}.`))
-  } catch (firstErr) {
-    if (pm === 'pnpm') {
-      if (cliSpinner) cliSpinner.text = 'pnpm global install failed, retrying with npm...'
-      pm = 'npm'
-      installCmd = buildInstallCommand(pm)
-      try {
-        execSync(installCmd, { stdio: 'pipe' })
-        cliSpinner?.succeed(chalk.green(`@slax-lab/reader-cli installed globally via npm.`))
-      } catch (err) {
-        cliSpinner?.fail('CLI install failed.')
-        const msg = err instanceof Error ? err.message : 'Unknown error'
-        if (opts.json) {
-          printJson(failure('cli_install_failed', msg, `Try manually: ${installCmd}`))
-        } else {
-          console.error(chalk.red(msg))
-          console.error(chalk.dim(`Try manually: ${installCmd}`))
-        }
-        process.exit(1)
-      }
+    cliSpinner?.succeed(chalk.green('@slax-lab/reader-cli installed globally.'))
+  } catch (err) {
+    cliSpinner?.fail('CLI install failed.')
+    const msg = err instanceof Error ? err.message : 'Unknown error'
+    if (opts.json) {
+      printJson(failure('cli_install_failed', msg, `Try manually: ${installCmd}`))
     } else {
-      cliSpinner?.fail('CLI install failed.')
-      const msg = firstErr instanceof Error ? firstErr.message : 'Unknown error'
-      if (opts.json) {
-        printJson(failure('cli_install_failed', msg, `Try manually: ${installCmd}`))
-      } else {
-        console.error(chalk.red(msg))
-        console.error(chalk.dim(`Try manually: ${installCmd}`))
-      }
-      process.exit(1)
+      console.error(chalk.red(msg))
+      console.error(chalk.dim(`Try manually: ${installCmd}`))
     }
+    process.exit(1)
   }
 
   // Step 2: install the AI Agent skill
@@ -91,12 +67,11 @@ async function runInstall(currentVersion: string, opts: InstallOptions): Promise
   if (opts.json) {
     const version = resolveInstalledVersion(currentVersion)
     if (skillInstalled) {
-      printJson(success({ installed: true, skillInstalled: true, packageManager: pm, version }))
+      printJson(success({ installed: true, skillInstalled: true, version }))
     } else {
       printJson(success({
         installed: true,
         skillInstalled: false,
-        packageManager: pm,
         version,
         hint: 'AI Agent skill install failed. Run: reader-cli skill --sync',
       }))

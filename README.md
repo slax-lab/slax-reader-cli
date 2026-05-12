@@ -120,7 +120,7 @@ reader-cli add https://example.com --archive
 
 #### `reader-cli upgrade`
 
-Upgrade the CLI to the latest version. Automatically detects pnpm or npm.
+Upgrade the CLI to the latest version.
 
 | Option | Description |
 |--------|-------------|

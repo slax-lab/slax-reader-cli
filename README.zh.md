@@ -120,7 +120,7 @@ reader-cli add https://example.com --archive
 
 #### `reader-cli upgrade`
 
-升级 CLI 到最新版本，自动检测 pnpm 或 npm。
+升级 CLI 到最新版本。
 
 | 参数 | 说明 |
 |------|------|
