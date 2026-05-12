@@ -7,28 +7,29 @@ description: "Use Slax Reader CLI to save URLs/bookmarks to the user's reading l
 
 Use `reader-cli` to save URLs into the user's Slax Reader library.
 
-## Before using commands
+## Before using authenticated commands
 
-Check login state with:
+Check login state before saving, archiving, tagging, or otherwise accessing the user's Slax Reader account:
 
 ```bash
 reader-cli whoami --json
 ```
 
-If not logged in, ask the user for an API key or ask them to run:
+If not logged in, ask the user to run:
 
 ```bash
 reader-cli login
 ```
 
+Do not require a login check before `login`, `logout`, `upgrade --check`, `skill --check`, or `skill --sync`.
 Do not ask the user to paste an API key into the conversation unless they explicitly choose that flow.
 
 ## Commands
 
 | Task | Command |
 |------|---------|
-| Log in non-interactively | `reader-cli login --api-key <key> --json` |
 | Log in interactively | `reader-cli login` |
+| Log in with API key | Ask the user to run `reader-cli login` and enter the key through the CLI prompt; do not put API keys in shell commands. |
 | Log out | `reader-cli logout --json` |
 | Show account | `reader-cli whoami --json` |
 | Save URL | `reader-cli add <url> --json` |
