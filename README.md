@@ -43,18 +43,6 @@
 npx @slax-lab/reader-cli install
 ```
 
-Or install in two steps:
-
-```bash
-# 1. Install the CLI
-npm install -g @slax-lab/reader-cli
-# or
-pnpm add -g @slax-lab/reader-cli
-
-# 2. Install the AI Agent skill
-npx skills add slax-lab/slax-reader-cli -g -y
-```
-
 Verify:
 
 ```bash

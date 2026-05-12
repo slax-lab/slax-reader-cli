@@ -19,7 +19,7 @@ Slax Reader CLI 改变了这一点。安装之后，你的 Agent 可以直接把
 ### 方式二：手动安装
 
 ```bash
-npm install -g @slax-lab/reader-cli
+npx skills add slax-lab/slax-reader-cli -g -y
 reader-cli login
 ```
 

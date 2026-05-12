@@ -43,18 +43,6 @@
 npx @slax-lab/reader-cli install
 ```
 
-或分两步安装：
-
-```bash
-# 1. 安装 CLI
-npm install -g @slax-lab/reader-cli
-# 或
-pnpm add -g @slax-lab/reader-cli
-
-# 2. 安装 AI Agent Skill
-npx skills add slax-lab/slax-reader-cli -g -y
-```
-
 验证安装：
 
 ```bash

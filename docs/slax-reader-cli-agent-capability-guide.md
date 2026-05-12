@@ -19,7 +19,7 @@ Help me install and set up Slax Reader CLI: https://github.com/slax-lab/slax-rea
 ### Option 2: Manual install
 
 ```bash
-npm install -g @slax-lab/reader-cli
+npx skills add slax-lab/slax-reader-cli -g -y
 reader-cli login
 ```
 
