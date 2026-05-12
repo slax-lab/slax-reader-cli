@@ -25,6 +25,7 @@
 - 📌 **通过 URL 收藏书签** — 支持自定义标题、描述、标签和归档模式
 - 👤 **账号管理** — 登录、登出、查看当前用户信息
 - 🔄 **自动检测新版本** — 每次命令执行后提示更新，一键升级
+- 🤖 **AI Agent Skill** — 安装 skill 让 Agent 始终了解如何使用 CLI，CLI 升级后自动提示同步
 
 ---
 
@@ -36,10 +37,22 @@
 
 ### 安装
 
+**一键安装**（同时安装 CLI 和 AI Agent Skill）：
+
 ```bash
+npx @slax-lab/reader-cli install
+```
+
+或分两步安装：
+
+```bash
+# 1. 安装 CLI
 npm install -g @slax-lab/reader-cli
 # 或
 pnpm add -g @slax-lab/reader-cli
+
+# 2. 安装 AI Agent Skill
+npx skills add slax-lab/slax-reader-cli -g -y
 ```
 
 验证安装：
@@ -125,6 +138,18 @@ reader-cli add https://example.com --archive
 |------|------|
 | `--check` | 仅检查是否有新版本，不安装 |
 
+#### `reader-cli skill`
+
+管理 AI Agent Skill。Skill 会告诉 Agent 如何使用 CLI，通过 `npx @slax-lab/reader-cli install` 安装时会自动安装。
+
+| 参数 | 说明 |
+|------|------|
+| `--check` | 查看已安装的 skill 是否与当前 CLI 版本同步 |
+| `--sync` | 安装或更新 skill，使其与当前 CLI 版本一致 |
+| `--force` | 强制重新安装，即使已同步 |
+
+升级 CLI 后，运行 `reader-cli skill --sync` 保持 skill 同步——或者让 Agent 在命令输出中看到 `_hints.skill` 字段时自动处理。
+
 #### `reader-cli --help`
 
 显示完整的使用说明和所有可用命令。
@@ -141,9 +166,29 @@ reader-cli add https://example.com --archive
 帮我安装并配置 Slax Reader CLI：https://github.com/slax-lab/slax-reader-cli/blob/main/docs/ai-agent-installation-guide.zh.md
 ```
 
-> Agent 会自动阅读安装指南、安装 CLI、引导你完成身份验证，并将自身配置为书签工具。
+> Agent 会自动阅读安装指南、安装 CLI 和 AI Agent Skill、引导你完成身份验证。
 
 支持：**Claude Code** · **Claude Desktop** · **OpenAI Codex** · **Gemini CLI** · **OpenClaw** · **Cursor** · **Windsurf**
+
+### AI Agent Skill
+
+Skill（`skills/slax-reader/SKILL.md`）会告诉 Agent 如何使用 CLI。安装后，Agent 将：
+
+- 了解所有可用命令和选项
+- 在有新版本时自动通知你（`_hints.upgrade`）
+- 在 skill 与 CLI 版本不同步时自动通知你（`_hints.skill`）并提议执行 `reader-cli skill --sync`
+
+手动安装或更新 skill：
+
+```bash
+reader-cli skill --sync
+```
+
+查看同步状态：
+
+```bash
+reader-cli skill --check
+```
 
 <details>
 <summary>已安装？将此 System Prompt 添加到你的 Agent 配置中</summary>

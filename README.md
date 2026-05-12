@@ -25,6 +25,7 @@
 - 📌 **Save bookmarks by URL** — with optional title, description, tags, and archive mode
 - 👤 **Account management** — login, logout, and view current user info
 - 🔄 **Auto update notifications** — notified of new versions after each command; upgrade in one step
+- 🤖 **AI Agent skill** — install a skill so your agent always knows how to use the CLI, with automatic sync hints when the CLI is upgraded
 
 ---
 
@@ -36,10 +37,22 @@
 
 ### Installation
 
+**One-line setup** (installs CLI + AI Agent skill):
+
 ```bash
+npx @slax-lab/reader-cli install
+```
+
+Or install in two steps:
+
+```bash
+# 1. Install the CLI
 npm install -g @slax-lab/reader-cli
 # or
 pnpm add -g @slax-lab/reader-cli
+
+# 2. Install the AI Agent skill
+npx skills add slax-lab/slax-reader-cli -g -y
 ```
 
 Verify:
@@ -125,6 +138,18 @@ Upgrade the CLI to the latest version. Automatically detects pnpm or npm.
 |--------|-------------|
 | `--check` | Check for a newer version only; do not install |
 
+#### `reader-cli skill`
+
+Manage the AI Agent skill. The skill teaches your agent how to use the CLI and is installed automatically by `npx @slax-lab/reader-cli install`.
+
+| Option | Description |
+|--------|-------------|
+| `--check` | Show whether the installed skill is in sync with the current CLI version |
+| `--sync` | Install or update the skill to match the current CLI version |
+| `--force` | Force reinstall even if already in sync |
+
+After upgrading the CLI, run `reader-cli skill --sync` to keep the skill in sync — or let your agent do it when it sees a `_hints.skill` field in command output.
+
 #### `reader-cli --help`
 
 Show full usage and all available commands.
@@ -141,9 +166,29 @@ Let your AI Agent install and configure everything for you. Copy the prompt belo
 Help me install and set up Slax Reader CLI: https://github.com/slax-lab/slax-reader-cli/blob/main/docs/ai-agent-installation-guide.md
 ```
 
-> Your agent will read the guide, install the CLI, walk you through authentication, and configure itself to use the bookmark tool — all automatically.
+> Your agent will read the guide, install the CLI and the AI Agent skill, walk you through authentication — all automatically.
 
 Supports: **Claude Code** · **Claude Desktop** · **OpenAI Codex** · **Gemini CLI** · **OpenClaw** · **Cursor** · **Windsurf**
+
+### AI Agent Skill
+
+The skill (`skills/slax-reader/SKILL.md`) teaches your agent how to use the CLI. Once installed, your agent will:
+
+- Know all available commands and options
+- Automatically notify you when a new CLI version is available (`_hints.upgrade`)
+- Automatically notify you when the skill is out of sync with the CLI (`_hints.skill`) and offer to run `reader-cli skill --sync`
+
+Install or update the skill manually:
+
+```bash
+reader-cli skill --sync
+```
+
+Check sync status:
+
+```bash
+reader-cli skill --check
+```
 
 <details>
 <summary>Already installed? Add this to your agent's system prompt</summary>
