@@ -5,7 +5,7 @@ import { readJsonState, writeJsonState } from './state.js'
 const PACKAGE_NAME = '@slax-lab/reader-cli'
 const REGISTRY_URL = `https://registry.npmjs.org/${PACKAGE_NAME}/latest`
 const UPDATE_STATE_FILE = 'update-state.json'
-const CACHE_TTL_MS = 24 * 60 * 60 * 1000
+const CACHE_TTL_MS = 60 * 60 * 1000
 
 interface UpdateState {
   latestVersion: string
