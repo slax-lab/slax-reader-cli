@@ -1,8 +1,17 @@
 import { Command } from 'commander'
 import chalk from 'chalk'
 import ora from 'ora'
-import { request, handleApiError } from '../lib/api.js'
-import type { AddUrlBookmarkReq, AddBookmarkReq, AddBookmarkResp } from '../types.js'
+import { request, handleApiError, apiErrorCode, apiErrorMessage } from '../lib/api.js'
+import { failure, printJson, success } from '../lib/output.js'
+import type { AddUrlBookmarkReq } from '../types.js'
+
+interface AddOptions {
+  title?: string
+  description?: string
+  tags?: string
+  archive?: boolean
+  json?: boolean
+}
 
 export function registerBookmarkCommands(program: Command): void {
   program
@@ -12,8 +21,9 @@ export function registerBookmarkCommands(program: Command): void {
     .option('-d, --description <desc>', 'Bookmark description')
     .option('--tags <tags>', 'Comma-separated tags (e.g. "tech,news")')
     .option('--archive', 'Enable archive mode')
-    .action(async (url: string, opts) => {
-      // Normalize URL
+    .option('--json', 'Output JSON')
+    .action(async (url: string, opts: AddOptions) => {
+      const inputUrl = url
       if (!url.startsWith('http://') && !url.startsWith('https://')) {
         url = 'https://' + url
       }
@@ -21,7 +31,8 @@ export function registerBookmarkCommands(program: Command): void {
       try {
         new URL(url)
       } catch {
-        console.error(chalk.red(`Invalid URL: ${url}`))
+        if (opts.json) printJson(failure('invalid_url', `Invalid URL: ${inputUrl}`))
+        else console.error(chalk.red(`Invalid URL: ${url}`))
         process.exit(1)
       }
 
@@ -37,15 +48,21 @@ export function registerBookmarkCommands(program: Command): void {
         is_archive: opts.archive ?? false,
       }
 
-      const spinner = ora(`Adding bookmark: ${chalk.dim(url)}`).start()
+      const spinner = opts.json ? null : ora(`Adding bookmark: ${chalk.dim(url)}`).start()
       try {
         await request<unknown>('POST', '/v1/bookmark/add_url', body)
-        spinner.succeed(chalk.green(`Bookmark added: ${chalk.bold(url)}`))
-        if (tags.length) {
+        spinner?.succeed(chalk.green(`Bookmark added: ${chalk.bold(url)}`))
+        if (opts.json) {
+          printJson(success({ url, title: opts.title ?? null, description: opts.description ?? null, tags, archive: body.is_archive }))
+        } else if (tags.length) {
           console.log(chalk.dim(`  Tags: ${tags.join(', ')}`))
         }
       } catch (err) {
-        spinner.fail('Failed to add bookmark')
+        spinner?.fail('Failed to add bookmark')
+        if (opts.json) {
+          printJson(failure(apiErrorCode(err), apiErrorMessage(err)))
+          process.exit(1)
+        }
         handleApiError(err)
       }
     })

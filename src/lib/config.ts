@@ -1,3 +1,4 @@
+import path from 'node:path'
 import Conf from 'conf'
 
 interface ConfigSchema {
@@ -6,7 +7,7 @@ interface ConfigSchema {
 }
 
 const config = new Conf<ConfigSchema>({
-  projectName: 'slax-reader-cli',
+  projectName: 'reader-cli',
   defaults: {
     apiKey: '',
     apiBase: 'https://api-reader.slax.com',
@@ -35,4 +36,8 @@ export function setApiBase(base: string): void {
 
 export function getConfigPath(): string {
   return config.path
+}
+
+export function getConfigDir(): string {
+  return path.dirname(config.path)
 }
