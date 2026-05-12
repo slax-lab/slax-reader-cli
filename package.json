@@ -8,13 +8,11 @@
   },
   "files": [
     "dist",
-    "scripts/install-skill.cjs",
     "skills"
   ],
   "scripts": {
     "build": "tsup",
     "dev": "tsup --watch",
-    "postinstall": "node scripts/install-skill.cjs",
     "prepublishOnly": "npm run build",
     "typecheck": "tsc --noEmit"
   },
