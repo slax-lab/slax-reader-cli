@@ -7,7 +7,7 @@ import { writeSkillStamp, clearPendingSkill } from '../lib/skillscheck.js'
 import { execNpx } from '../lib/exec.js'
 import { detectPackageManager, buildInstallCommand } from '../lib/packageManager.js'
 
-const SKILLS_SOURCE = 'slax-lab/reader-cli'
+const SKILLS_SOURCE = 'slax-lab/slax-reader-cli'
 
 interface InstallOptions {
   json?: boolean
