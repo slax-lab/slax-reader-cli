@@ -9,7 +9,7 @@
 ## 第 1 步：安装
 
 ```bash
-npx @slax-lab/reader-cli install
+npx @slax-lab/reader-cli@latest install
 ```
 
 此命令会全局安装 `reader-cli` 并自动安装 AI Agent skill。

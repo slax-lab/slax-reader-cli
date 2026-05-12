@@ -9,7 +9,7 @@ Node.js (npm/npx) must be installed before proceeding.
 ## Step 1: Install
 
 ```bash
-npx @slax-lab/reader-cli install
+npx @slax-lab/reader-cli@latest install
 ```
 
 This installs `reader-cli` globally and sets up the AI Agent skill automatically.

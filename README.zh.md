@@ -40,7 +40,7 @@
 **一键安装**（同时安装 CLI 和 AI Agent Skill）：
 
 ```bash
-npx @slax-lab/reader-cli install
+npx @slax-lab/reader-cli@latest install
 ```
 
 验证安装：
@@ -128,7 +128,7 @@ reader-cli add https://example.com --archive
 
 #### `reader-cli skill`
 
-管理 AI Agent Skill。Skill 会告诉 Agent 如何使用 CLI，通过 `npx @slax-lab/reader-cli install` 安装时会自动安装。
+管理 AI Agent Skill。Skill 会告诉 Agent 如何使用 CLI，通过 `npx @slax-lab/reader-cli@latest install` 安装时会自动安装。
 
 | 参数 | 说明 |
 |------|------|
