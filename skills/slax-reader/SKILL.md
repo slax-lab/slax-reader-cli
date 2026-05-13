@@ -15,16 +15,9 @@ Check login state before saving, listing, viewing, archiving, tagging, or otherw
 reader-cli whoami --json
 ```
 
-If not logged in, ask the user to run:
-
-```bash
-reader-cli login
-```
+If not logged in, prefer asking the user to run interactive `reader-cli login` when they can use a terminal. If they cannot complete the interactive flow, offer `reader-cli login --api-key <key> --json` and ask for an API key only if they explicitly choose that path.
 
 Do not require a login check before `login`, `logout`, `upgrade --check`, `skill --check`, or `skill --sync`.
-Prefer asking the user to run interactive `reader-cli login` when they can operate a terminal directly.
-Use `reader-cli login --api-key <key> --json` only when the user cannot complete the interactive flow, such as non-technical users needing step-by-step assistance or non-interactive agents like OpenClaw.
-Do not ask the user to paste an API key into the conversation unless they explicitly choose that flow.
 
 ## Commands
 
