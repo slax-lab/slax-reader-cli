@@ -1,11 +1,10 @@
 import { Command } from 'commander'
 import chalk from 'chalk'
-import ora from 'ora'
 import { createInterface } from 'node:readline/promises'
 import { stdin, stdout } from 'node:process'
 import { getApiKey, setApiKey, clearApiKey, getApiBase, setApiBase, getConfigPath } from '../lib/config.js'
-import { request, handleApiError, apiErrorCode, apiErrorMessage } from '../lib/api.js'
-import { failure, printJson, success } from '../lib/output.js'
+import { request } from '../lib/api.js'
+import { commandResult, printJsonFailure, runCommand } from '../lib/command.js'
 import type { UserInfo } from '../types.js'
 
 interface AuthOptions {
@@ -30,8 +29,7 @@ export function registerAuthCommands(program: Command): void {
 
       if (!apiKey) {
         if (opts.json) {
-          printJson(failure('missing_api_key', 'API Key is required in JSON mode.', 'Pass --api-key <key>.'))
-          process.exit(1)
+          printJsonFailure(opts, 'missing_api_key', 'API Key is required in JSON mode.', 'Pass --api-key <key>.')
         }
         const rl = createInterface({ input: stdin, output: stdout })
         try {
@@ -43,15 +41,11 @@ export function registerAuthCommands(program: Command): void {
 
       apiKey = apiKey.trim()
       if (!apiKey) {
-        if (opts.json) printJson(failure('empty_api_key', 'API Key cannot be empty.'))
-        else console.error(chalk.red('API Key cannot be empty.'))
-        process.exit(1)
+        printJsonFailure(opts, 'empty_api_key', 'API Key cannot be empty.')
       }
 
       if (!apiKey.startsWith('sr-')) {
-        if (opts.json) printJson(failure('invalid_api_key', 'Invalid API Key format. It should start with "sr-".'))
-        else console.error(chalk.red('Invalid API Key format. It should start with "sr-".'))
-        process.exit(1)
+        printJsonFailure(opts, 'invalid_api_key', 'Invalid API Key format. It should start with "sr-".')
       }
 
       if (opts.apiBase) {
@@ -60,37 +54,35 @@ export function registerAuthCommands(program: Command): void {
 
       setApiKey(apiKey)
 
-      const spinner = opts.json ? null : ora('Verifying API Key...').start()
-      try {
-        const user = await request<UserInfo>('GET', '/v1/user/me')
-        spinner?.succeed(chalk.green(`Logged in as ${chalk.bold(user.username || user.email || 'User')}`))
-        if (opts.json) {
-          printJson(success({ user, apiBase: getApiBase(), configPath: getConfigPath() }))
-        } else {
-          console.log(chalk.dim(`Config saved to ${getConfigPath()}`))
-        }
-      } catch (err) {
-        spinner?.fail('Login failed')
-        clearApiKey()
-        if (opts.json) {
-          printJson(failure(apiErrorCode(err), apiErrorMessage(err)))
-          process.exit(1)
-        }
-        handleApiError(err)
-      }
+      await runCommand(opts, {
+        loading: 'Verifying API Key...',
+        failMessage: 'Login failed',
+        onError: clearApiKey,
+        action: async () => {
+          const user = await request<UserInfo>('GET', '/v1/user/me')
+          return commandResult({
+            data: { user, apiBase: getApiBase(), configPath: getConfigPath() },
+            render: ({ user }) => {
+              console.log(chalk.green(`Logged in as ${chalk.bold(user.username || user.email || 'User')}`))
+              console.log(chalk.dim(`Config saved to ${getConfigPath()}`))
+            },
+          })
+        },
+      })
     })
 
   program
     .command('logout')
     .description('Log out and clear stored API Key')
     .option('--json', 'Output JSON')
-    .action((opts: JsonOptions) => {
+    .action(async (opts: JsonOptions) => {
       clearApiKey()
-      if (opts.json) {
-        printJson(success({ loggedOut: true }))
-      } else {
-        console.log(chalk.green('Logged out successfully.'))
-      }
+      await runCommand(opts, {
+        action: () => commandResult({
+          data: { loggedOut: true },
+          message: chalk.green('Logged out successfully.'),
+        }),
+      })
     })
 
   program
@@ -100,35 +92,29 @@ export function registerAuthCommands(program: Command): void {
     .action(async (opts: JsonOptions) => {
       const key = getApiKey()
       if (!key) {
-        if (opts.json) printJson(failure('not_logged_in', 'Not logged in. Run `reader-cli login` first.'))
-        else console.log(chalk.yellow('Not logged in. Run `reader-cli login` first.'))
-        process.exit(1)
+        printJsonFailure(opts, 'not_logged_in', 'Not logged in. Run `reader-cli login` first.')
       }
 
-      const spinner = opts.json ? null : ora('Fetching user info...').start()
-      try {
-        const user = await request<UserInfo>('GET', '/v1/user/me')
-        spinner?.stop()
-        if (opts.json) {
-          printJson(success({
-            user,
-            apiBase: getApiBase(),
-            apiKeyPrefix: `${key.slice(0, 9)}...`,
-          }))
-        } else {
-          console.log(chalk.bold('Current User:'))
-          console.log(`  Username : ${chalk.cyan(user.username || '-')}`)
-          console.log(`  Email    : ${chalk.cyan(user.email || '-')}`)
-          console.log(`  API Base : ${chalk.dim(getApiBase())}`)
-          console.log(`  API Key  : ${chalk.dim(key.slice(0, 9) + '...')}`)
-        }
-      } catch (err) {
-        spinner?.fail('Failed to fetch user info')
-        if (opts.json) {
-          printJson(failure(apiErrorCode(err), apiErrorMessage(err)))
-          process.exit(1)
-        }
-        handleApiError(err)
-      }
+      await runCommand(opts, {
+        loading: 'Fetching user info...',
+        failMessage: 'Failed to fetch user info',
+        action: async () => {
+          const user = await request<UserInfo>('GET', '/v1/user/me')
+          return commandResult({
+            data: {
+              user,
+              apiBase: getApiBase(),
+              apiKeyPrefix: `${key.slice(0, 9)}...`,
+            },
+            render: () => {
+              console.log(chalk.bold('Current User:'))
+              console.log(`  Username : ${chalk.cyan(user.username || '-')}`)
+              console.log(`  Email    : ${chalk.cyan(user.email || '-')}`)
+              console.log(`  API Base : ${chalk.dim(getApiBase())}`)
+              console.log(`  API Key  : ${chalk.dim(key.slice(0, 9) + '...')}`)
+            },
+          })
+        },
+      })
     })
 }

@@ -1,8 +1,7 @@
 import { Command } from 'commander'
 import chalk from 'chalk'
-import ora from 'ora'
-import { request, handleApiError, apiErrorCode, apiErrorMessage } from '../lib/api.js'
-import { failure, printJson, success } from '../lib/output.js'
+import { request } from '../lib/api.js'
+import { commandResult, printJsonFailure, runCommand } from '../lib/command.js'
 import type { AddUrlBookmarkReq, BookmarkDetail, BookmarkListItem } from '../types.js'
 
 interface AddOptions {
@@ -42,9 +41,7 @@ export function registerBookmarkCommands(program: Command): void {
       try {
         new URL(url)
       } catch {
-        if (opts.json) printJson(failure('invalid_url', `Invalid URL: ${inputUrl}`))
-        else console.error(chalk.red(`Invalid URL: ${url}`))
-        process.exit(1)
+        printJsonFailure(opts, 'invalid_url', `Invalid URL: ${inputUrl}`)
       }
 
       const tags: string[] = opts.tags
@@ -59,23 +56,20 @@ export function registerBookmarkCommands(program: Command): void {
         is_archive: opts.archive ?? false,
       }
 
-      const spinner = opts.json ? null : ora(`Adding bookmark: ${chalk.dim(url)}`).start()
-      try {
-        await request<unknown>('POST', '/v1/bookmark/add_url', body)
-        spinner?.succeed(chalk.green(`Bookmark added: ${chalk.bold(url)}`))
-        if (opts.json) {
-          printJson(success({ url, title: opts.title ?? null, description: opts.description ?? null, tags, archive: body.is_archive }))
-        } else if (tags.length) {
-          console.log(chalk.dim(`  Tags: ${tags.join(', ')}`))
-        }
-      } catch (err) {
-        spinner?.fail('Failed to add bookmark')
-        if (opts.json) {
-          printJson(failure(apiErrorCode(err), apiErrorMessage(err)))
-          process.exit(1)
-        }
-        handleApiError(err)
-      }
+      await runCommand(opts, {
+        loading: `Adding bookmark: ${chalk.dim(url)}`,
+        failMessage: 'Failed to add bookmark',
+        action: async () => {
+          await request<unknown>('POST', '/v1/bookmark/add_url', body)
+          return commandResult({
+            data: { url, title: opts.title ?? null, description: opts.description ?? null, tags, archive: body.is_archive },
+            render: () => {
+              console.log(chalk.green(`Bookmark added: ${chalk.bold(url)}`))
+              if (tags.length) console.log(chalk.dim(`  Tags: ${tags.join(', ')}`))
+            },
+          })
+        },
+      })
     })
 
   program
@@ -90,54 +84,26 @@ export function registerBookmarkCommands(program: Command): void {
       const page = parseInt(opts.page, 10)
       const size = parseInt(opts.size, 10)
       if (isNaN(page) || page < 1) {
-        if (opts.json) printJson(failure('invalid_page', 'Page must be a positive number.'))
-        else console.error(chalk.red('Page must be a positive number.'))
-        process.exit(1)
+        printJsonFailure(opts, 'invalid_page', 'Page must be a positive number.')
       }
       if (isNaN(size) || size < 1) {
-        if (opts.json) printJson(failure('invalid_size', 'Size must be a positive number.'))
-        else console.error(chalk.red('Size must be a positive number.'))
-        process.exit(1)
+        printJsonFailure(opts, 'invalid_size', 'Size must be a positive number.')
       }
-      const spinner = opts.json ? null : ora('Fetching bookmarks...').start()
-      try {
-        const items = await request<BookmarkListItem[]>(
-          'GET',
-          `/v1/bookmark/list?page=${page}&size=${size}&filter=${opts.filter}`
-        )
-        spinner?.stop()
-        if (opts.json) {
-          printJson(success({ page, size, filter: opts.filter, items }))
-          return
-        }
-        if (!items || items.length === 0) {
-          console.log(chalk.dim('No bookmarks found.'))
-          return
-        }
-        console.log(chalk.bold(`Bookmarks (page ${page}, ${items.length} items):\n`))
-        for (const item of items) {
-          const title = item.alias_title || item.title || chalk.dim('(untitled)')
-          const starred = item.starred === 'star' ? chalk.yellow(' ★') : ''
-          const archived = item.archived === 'archive' ? chalk.dim(' [archived]') : ''
-          console.log(`  ${chalk.bold(chalk.cyan(item.id))}  ${title}${starred}${archived}`)
-          console.log(`  ${chalk.dim(item.target_url)}`)
-          if (item.description) {
-            const desc = item.description.length > 80
-              ? item.description.slice(0, 80) + '...'
-              : item.description
-            console.log(`  ${chalk.dim(desc)}`)
-          }
-          console.log()
-        }
-        console.log(chalk.dim(`  Tip: use ${chalk.bold('reader-cli view <id>')} to read bookmark content`))
-      } catch (err) {
-        spinner?.fail('Failed to fetch bookmarks')
-        if (opts.json) {
-          printJson(failure(apiErrorCode(err), apiErrorMessage(err)))
-          process.exit(1)
-        }
-        handleApiError(err)
-      }
+
+      await runCommand(opts, {
+        loading: 'Fetching bookmarks...',
+        failMessage: 'Failed to fetch bookmarks',
+        action: async () => {
+          const items = await request<BookmarkListItem[]>(
+            'GET',
+            `/v1/bookmark/list?page=${page}&size=${size}&filter=${opts.filter}`
+          )
+          return commandResult({
+            data: { page, size, filter: opts.filter, items },
+            render: ({ items }) => renderBookmarkList(items, page),
+          })
+        },
+      })
     })
 
   program
@@ -145,63 +111,85 @@ export function registerBookmarkCommands(program: Command): void {
     .description('View bookmark detail')
     .option('--json', 'Output JSON')
     .action(async (id: string, opts: ViewOptions) => {
-      const spinner = opts.json ? null : ora('Fetching bookmark...').start()
-      try {
-        const detail = await request<BookmarkDetail>(
-          'GET',
-          `/v1/bookmark/detail?bookmark_id=${id}`
-        )
-        spinner?.stop()
-        if (opts.json) {
-          printJson(success(detail))
-          return
-        }
-        const title = detail.alias_title || detail.title
-        console.log(chalk.bold(title))
-        console.log(chalk.dim('─'.repeat(Math.min(title.length * 2, 60))))
-        console.log()
-        if (detail.byline) {
-          console.log(chalk.dim(`Author: ${detail.byline}`))
-        }
-        console.log(chalk.dim(`URL: ${detail.target_url}`))
-        console.log(chalk.dim(`Status: ${detail.status}`))
-        const flags: string[] = []
-        if (detail.starred === 'star') flags.push(chalk.yellow('★ Starred'))
-        if (detail.archived === 'archive') flags.push('Archived')
-        if (flags.length) {
-          console.log(chalk.dim(flags.join(' · ')))
-        }
-        if (detail.tags && detail.tags.length) {
-          console.log(chalk.dim(`Tags: ${detail.tags.map(t => t.name).join(', ')}`))
-        }
-        if (detail.created_at) {
-          console.log(chalk.dim(`Created: ${new Date(detail.created_at).toLocaleString()}`))
-        }
-        if (detail.content_word_count) {
-          console.log(chalk.dim(`Words: ${detail.content_word_count}`))
-        }
-        console.log()
-        if (detail.overview) {
-          console.log(chalk.bold('Overview'))
-          console.log(detail.overview)
-          console.log()
-        }
-        if (detail.description) {
-          console.log(chalk.bold('Description'))
-          console.log(detail.description)
-          console.log()
-        }
-        if (detail.content) {
-          console.log(chalk.bold('Content'))
-          console.log(detail.content)
-        }
-      } catch (err) {
-        spinner?.fail('Failed to fetch bookmark')
-        if (opts.json) {
-          printJson(failure(apiErrorCode(err), apiErrorMessage(err)))
-          process.exit(1)
-        }
-        handleApiError(err)
-      }
+      await runCommand(opts, {
+        loading: 'Fetching bookmark...',
+        failMessage: 'Failed to fetch bookmark',
+        action: async () => {
+          const detail = await request<BookmarkDetail>(
+            'GET',
+            `/v1/bookmark/detail?bookmark_id=${id}`
+          )
+          return commandResult({
+            data: detail,
+            render: renderBookmarkDetail,
+          })
+        },
+      })
     })
+}
+
+function renderBookmarkList(items: BookmarkListItem[], page: number): void {
+  if (!items || items.length === 0) {
+    console.log(chalk.dim('No bookmarks found.'))
+    return
+  }
+
+  console.log(chalk.bold(`Bookmarks (page ${page}, ${items.length} items):\n`))
+  for (const item of items) {
+    const title = item.alias_title || item.title || chalk.dim('(untitled)')
+    const starred = item.starred === 'star' ? chalk.yellow(' ★') : ''
+    const archived = item.archived === 'archive' ? chalk.dim(' [archived]') : ''
+    console.log(`  ${chalk.bold(chalk.cyan(item.id))}  ${title}${starred}${archived}`)
+    console.log(`  ${chalk.dim(item.target_url)}`)
+    if (item.description) {
+      const desc = item.description.length > 80
+        ? item.description.slice(0, 80) + '...'
+        : item.description
+      console.log(`  ${chalk.dim(desc)}`)
+    }
+    console.log()
+  }
+  console.log(chalk.dim(`  Tip: use ${chalk.bold('reader-cli view <id>')} to read bookmark content`))
+}
+
+function renderBookmarkDetail(detail: BookmarkDetail): void {
+  const title = detail.alias_title || detail.title
+  console.log(chalk.bold(title))
+  console.log(chalk.dim('─'.repeat(Math.min(title.length * 2, 60))))
+  console.log()
+  if (detail.byline) {
+    console.log(chalk.dim(`Author: ${detail.byline}`))
+  }
+  console.log(chalk.dim(`URL: ${detail.target_url}`))
+  console.log(chalk.dim(`Status: ${detail.status}`))
+  const flags: string[] = []
+  if (detail.starred === 'star') flags.push(chalk.yellow('★ Starred'))
+  if (detail.archived === 'archive') flags.push('Archived')
+  if (flags.length) {
+    console.log(chalk.dim(flags.join(' · ')))
+  }
+  if (detail.tags && detail.tags.length) {
+    console.log(chalk.dim(`Tags: ${detail.tags.map(t => t.name).join(', ')}`))
+  }
+  if (detail.created_at) {
+    console.log(chalk.dim(`Created: ${new Date(detail.created_at).toLocaleString()}`))
+  }
+  if (detail.content_word_count) {
+    console.log(chalk.dim(`Words: ${detail.content_word_count}`))
+  }
+  console.log()
+  if (detail.overview) {
+    console.log(chalk.bold('Overview'))
+    console.log(detail.overview)
+    console.log()
+  }
+  if (detail.description) {
+    console.log(chalk.bold('Description'))
+    console.log(detail.description)
+    console.log()
+  }
+  if (detail.content) {
+    console.log(chalk.bold('Content'))
+    console.log(detail.content)
+  }
 }
