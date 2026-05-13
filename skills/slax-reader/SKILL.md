@@ -1,15 +1,15 @@
 ---
 name: slax-reader
-description: "Use Slax Reader CLI to save URLs/bookmarks to the user's reading library, authenticate with reader-cli, check account status, archive URLs, tag bookmarks, and handle reader-cli upgrade or skill sync hints. Trigger when the user asks to save, bookmark, archive, or organize web links with Slax Reader."
+description: "Use Slax Reader CLI to save URLs/bookmarks to the user's reading library, list and view bookmarks, authenticate with reader-cli, check account status, archive URLs, tag bookmarks, and handle reader-cli upgrade or skill sync hints. Trigger when the user asks to save, bookmark, archive, list, view, or organize web links with Slax Reader."
 ---
 
 # Slax Reader CLI
 
-Use `reader-cli` to save URLs into the user's Slax Reader library.
+Use `reader-cli` to save URLs into the user's Slax Reader library, list saved bookmarks, and view bookmark details.
 
 ## Before using authenticated commands
 
-Check login state before saving, archiving, tagging, or otherwise accessing the user's Slax Reader account:
+Check login state before saving, listing, viewing, archiving, tagging, or otherwise accessing the user's Slax Reader account:
 
 ```bash
 reader-cli whoami --json
@@ -39,6 +39,10 @@ Do not ask the user to paste an API key into the conversation unless they explic
 | Save with description | `reader-cli add <url> --description "Description" --json` |
 | Save with tags | `reader-cli add <url> --tags "tag1,tag2" --json` |
 | Archive URL | `reader-cli add <url> --archive --json` |
+| List bookmarks | `reader-cli list` |
+| List bookmarks by page | `reader-cli list --page <number> --size <number>` |
+| Filter bookmarks | `reader-cli list --filter <all\|inbox\|archive\|starred>` |
+| View bookmark detail | `reader-cli view <bookmark-id>` |
 | Check CLI update | `reader-cli upgrade --check --json` |
 | Sync skill | `reader-cli skill --sync --json` |
 | Check skill sync | `reader-cli skill --check --json` |
@@ -46,10 +50,18 @@ Do not ask the user to paste an API key into the conversation unless they explic
 ## Bookmark rules
 
 - Preserve the exact URL the user asked to save.
-- Add `--json` when you invoke commands so update hints are visible.
+- Add `--json` when you invoke commands that support it so update hints are visible.
 - Use comma-separated tags with `--tags "tag1,tag2"`.
 - Use `--archive` only when the user asks to archive/preserve content or when they explicitly approve archive mode.
 - If the user provides multiple URLs, save them one at a time so failures are isolated.
+
+## Listing and viewing bookmarks
+
+- Use `reader-cli list` when the user wants to see their saved bookmarks.
+- Use `reader-cli list --filter inbox`, `reader-cli list --filter archive`, or `reader-cli list --filter starred` when the user asks for a specific subset.
+- Use `--page` and `--size` when the user asks for pagination or a specific number of results.
+- Use `reader-cli view <bookmark-id>` when the user asks to open, inspect, summarize, or read details for a specific bookmark ID.
+- Do not guess bookmark IDs; ask the user for an ID or list bookmarks first.
 
 ## Update and skill hints
 

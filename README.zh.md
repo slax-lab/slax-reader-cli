@@ -23,6 +23,7 @@
 ## 功能特性
 
 - 📌 **通过 URL 收藏书签** — 支持自定义标题、描述、标签和归档模式
+- 📚 **浏览阅读库** — 列出书签并查看单个书签详情
 - 👤 **账号管理** — 登录、登出、查看当前用户信息
 - 🔄 **自动检测新版本** — 每次命令执行后提示更新，一键升级
 - 🤖 **AI Agent Skill** — 安装 skill 让 Agent 始终了解如何使用 CLI，CLI 升级后自动提示同步
@@ -70,6 +71,12 @@ reader-cli add https://example.com \
   --description "值得稍后阅读" \
   --tags "技术,AI" \
   --archive
+
+# 列出书签
+reader-cli list
+
+# 查看书签详情
+reader-cli view <bookmark-id>
 ```
 
 ### 命令参考
@@ -116,6 +123,34 @@ Current User:
 reader-cli add https://example.com
 reader-cli add https://example.com --title "示例" --tags "阅读,AI"
 reader-cli add https://example.com --archive
+```
+
+#### `reader-cli list`
+
+列出你的书签。别名：`reader-cli ls`。
+
+| 参数 | 说明 |
+|------|------|
+| `-p, --page <number>` | 页码（默认：`1`） |
+| `-s, --size <number>` | 每页数量（默认：`20`） |
+| `-f, --filter <type>` | 筛选类型：`all`、`inbox`、`archive` 或 `starred`（默认：`all`） |
+
+示例：
+
+```bash
+reader-cli list
+reader-cli list --filter inbox --page 2
+reader-cli ls --size 10
+```
+
+#### `reader-cli view <bookmark-id>`
+
+查看书签详情，包括元数据、概览、描述，以及可用时的正文内容。
+
+示例：
+
+```bash
+reader-cli view 123
 ```
 
 #### `reader-cli upgrade`
@@ -191,6 +226,13 @@ reader-cli skill --check
     -d, --description <desc>         简短描述
     --tags <tags>                    逗号分隔的标签，例如 "技术,新闻"
     --archive                        启用归档模式
+
+  reader-cli list [选项]            列出书签
+    -p, --page <number>              页码，默认 1
+    -s, --size <number>              每页数量，默认 20
+    -f, --filter <type>              all、inbox、archive 或 starred
+
+  reader-cli view <bookmark-id>      查看书签详情
 
   reader-cli whoami                 显示当前用户
   reader-cli logout                 清除凭证

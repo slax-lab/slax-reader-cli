@@ -23,6 +23,7 @@
 ## Features
 
 - 📌 **Save bookmarks by URL** — with optional title, description, tags, and archive mode
+- 📚 **Browse your library** — list bookmarks and view individual bookmark details
 - 👤 **Account management** — login, logout, and view current user info
 - 🔄 **Auto update notifications** — notified of new versions after each command; upgrade in one step
 - 🤖 **AI Agent skill** — install a skill so your agent always knows how to use the CLI, with automatic sync hints when the CLI is upgraded
@@ -70,6 +71,12 @@ reader-cli add https://example.com \
   --description "Worth reading later" \
   --tags "tech,ai" \
   --archive
+
+# List bookmarks
+reader-cli list
+
+# View bookmark detail
+reader-cli view <bookmark-id>
 ```
 
 ### Command Reference
@@ -116,6 +123,34 @@ Examples:
 reader-cli add https://example.com
 reader-cli add https://example.com --title "Example" --tags "reading,ai"
 reader-cli add https://example.com --archive
+```
+
+#### `reader-cli list`
+
+List your bookmarks. Alias: `reader-cli ls`.
+
+| Option | Description |
+|--------|-------------|
+| `-p, --page <number>` | Page number (default: `1`) |
+| `-s, --size <number>` | Items per page (default: `20`) |
+| `-f, --filter <type>` | Filter: `all`, `inbox`, `archive`, or `starred` (default: `all`) |
+
+Examples:
+
+```bash
+reader-cli list
+reader-cli list --filter inbox --page 2
+reader-cli ls --size 10
+```
+
+#### `reader-cli view <bookmark-id>`
+
+View bookmark detail, including metadata, overview, description, and extracted content when available.
+
+Example:
+
+```bash
+reader-cli view 123
 ```
 
 #### `reader-cli upgrade`
@@ -191,6 +226,13 @@ Available commands:
     -d, --description <desc>         Short description
     --tags <tags>                    Comma-separated tags, e.g. "tech,news"
     --archive                        Enable archive mode
+
+  reader-cli list [options]         List bookmarks
+    -p, --page <number>              Page number, default 1
+    -s, --size <number>              Items per page, default 20
+    -f, --filter <type>              all, inbox, archive, or starred
+
+  reader-cli view <bookmark-id>      View bookmark detail
 
   reader-cli whoami                 Show current user
   reader-cli logout                 Clear credentials
