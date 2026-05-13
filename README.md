@@ -23,6 +23,7 @@
 ## Features
 
 - 📌 **Save bookmarks by URL** — with optional title, description, tags, and archive mode
+- 📚 **Browse your library** — list bookmarks and view individual bookmark details
 - 👤 **Account management** — login, logout, and view current user info
 - 🔄 **Auto update notifications** — notified of new versions after each command; upgrade in one step
 - 🤖 **AI Agent skill** — install a skill so your agent always knows how to use the CLI, with automatic sync hints when the CLI is upgraded
@@ -70,6 +71,12 @@ reader-cli add https://example.com \
   --description "Worth reading later" \
   --tags "tech,ai" \
   --archive
+
+# List bookmarks
+reader-cli list
+
+# View bookmark detail
+reader-cli view <bookmark-id>
 ```
 
 ### Command Reference
@@ -118,6 +125,34 @@ reader-cli add https://example.com --title "Example" --tags "reading,ai"
 reader-cli add https://example.com --archive
 ```
 
+#### `reader-cli list`
+
+List your bookmarks. Alias: `reader-cli ls`.
+
+| Option | Description |
+|--------|-------------|
+| `-p, --page <number>` | Page number (default: `1`) |
+| `-s, --size <number>` | Items per page (default: `20`) |
+| `-f, --filter <type>` | Filter: `all`, `inbox`, `archive`, or `starred` (default: `all`) |
+
+Examples:
+
+```bash
+reader-cli list
+reader-cli list --filter inbox --page 2
+reader-cli ls --size 10
+```
+
+#### `reader-cli view <bookmark-id>`
+
+View bookmark detail, including metadata, overview, description, and extracted content when available.
+
+Example:
+
+```bash
+reader-cli view 123
+```
+
 #### `reader-cli upgrade`
 
 Upgrade the CLI to the latest version.
@@ -136,7 +171,7 @@ Manage the AI Agent skill. The skill teaches your agent how to use the CLI and i
 | `--sync` | Install or update the skill to match the current CLI version |
 | `--force` | Force reinstall even if already in sync |
 
-After upgrading the CLI, run `reader-cli skill --sync` to keep the skill in sync — or let your agent do it when it sees a `_hints.skill` field in command output.
+After upgrading the CLI, `reader-cli upgrade` also keeps the skill in sync. When your agent sees `_hints.upgrade` or `_hints.skill` in command output, it should offer the same repair command: `reader-cli upgrade`.
 
 #### `reader-cli --help`
 
@@ -164,9 +199,9 @@ The skill (`skills/slax-reader/SKILL.md`) teaches your agent how to use the CLI.
 
 - Know all available commands and options
 - Automatically notify you when a new CLI version is available (`_hints.upgrade`)
-- Automatically notify you when the skill is out of sync with the CLI (`_hints.skill`) and offer to run `reader-cli skill --sync`
+- Automatically notify you when the skill is out of sync with the CLI (`_hints.skill`) and offer to run `reader-cli upgrade`
 
-Install or update the skill manually:
+Install or update the skill manually if needed:
 
 ```bash
 reader-cli skill --sync
@@ -191,6 +226,13 @@ Available commands:
     -d, --description <desc>         Short description
     --tags <tags>                    Comma-separated tags, e.g. "tech,news"
     --archive                        Enable archive mode
+
+  reader-cli list [options]         List bookmarks
+    -p, --page <number>              Page number, default 1
+    -s, --size <number>              Items per page, default 20
+    -f, --filter <type>              all, inbox, archive, or starred
+
+  reader-cli view <bookmark-id>      View bookmark detail
 
   reader-cli whoami                 Show current user
   reader-cli logout                 Clear credentials

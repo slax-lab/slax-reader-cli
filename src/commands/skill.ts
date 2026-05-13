@@ -2,10 +2,8 @@ import { Command } from 'commander'
 import chalk from 'chalk'
 import ora from 'ora'
 import { failure, printJson, success } from '../lib/output.js'
-import { readSkillStamp, writeSkillStamp, clearPendingSkill } from '../lib/skillscheck.js'
-import { execNpx } from '../lib/exec.js'
-
-const SKILLS_SOURCE = 'slax-lab/slax-reader-cli'
+import { readSkillStamp } from '../lib/skillscheck.js'
+import { syncSkillToVersion } from '../lib/skillSync.js'
 
 interface SkillOptions {
   check?: boolean
@@ -56,9 +54,11 @@ async function checkSkill(currentVersion: string, opts: SkillOptions): Promise<v
 }
 
 async function syncSkill(currentVersion: string, opts: SkillOptions): Promise<void> {
-  const stamp = (await readSkillStamp()) ?? ''
-  if (!opts.force && stamp === currentVersion) {
-    clearPendingSkill()
+  const spinner = opts.json ? null : ora('Installing Slax Reader AI Agent skill...').start()
+  const result = await syncSkillToVersion(currentVersion, { force: opts.force })
+
+  if (result.action === 'in_sync') {
+    spinner?.stop()
     const data = { action: 'in_sync', current: currentVersion }
     if (opts.json) {
       printJson(success(data))
@@ -68,32 +68,20 @@ async function syncSkill(currentVersion: string, opts: SkillOptions): Promise<vo
     return
   }
 
-  const spinner = opts.json ? null : ora('Installing Slax Reader AI Agent skill...').start()
-  try {
-    await execNpx(['-y', 'skills', 'add', SKILLS_SOURCE, '-g', '-y'], {
-      timeout: 10 * 60 * 1000,
-      maxBuffer: 10 * 1024 * 1024,
-    })
-    await writeSkillStamp(currentVersion)
-    clearPendingSkill()
+  if (result.action === 'synced') {
     spinner?.succeed(chalk.green(`Skill synced for reader-cli v${currentVersion}.`))
     if (opts.json) {
       printJson(success({ action: 'synced', current: currentVersion }))
     }
-  } catch (err) {
-    spinner?.fail('Skill sync failed')
-    const hint = `Run manually: npx -y skills add ${SKILLS_SOURCE} -g -y`
-    if (opts.json) {
-      printJson(failure('skill_sync_failed', errorMessage(err), hint))
-    } else {
-      console.error(chalk.red(errorMessage(err)))
-      console.error(chalk.dim(hint))
-    }
-    process.exit(1)
+    return
   }
-}
 
-function errorMessage(err: unknown): string {
-  if (err instanceof Error) return err.message
-  return 'An unknown error occurred.'
+  spinner?.fail('Skill sync failed')
+  if (opts.json) {
+    printJson(failure('skill_sync_failed', result.error ?? 'Skill sync failed.', result.hint))
+  } else {
+    console.error(chalk.red(result.error ?? 'Skill sync failed.'))
+    if (result.hint) console.error(chalk.dim(result.hint))
+  }
+  process.exit(1)
 }

@@ -1,40 +1,41 @@
 ---
 name: slax-reader
-description: "Use Slax Reader CLI to save URLs/bookmarks to the user's reading library, authenticate with reader-cli, check account status, archive URLs, tag bookmarks, and handle reader-cli upgrade or skill sync hints. Trigger when the user asks to save, bookmark, archive, or organize web links with Slax Reader."
+description: "Use Slax Reader CLI to save URLs/bookmarks to the user's reading library, list and view bookmarks, authenticate with reader-cli, check account status, archive URLs, tag bookmarks, and handle reader-cli upgrade or skill sync hints. Trigger when the user asks to save, bookmark, archive, list, view, or organize web links with Slax Reader."
 ---
 
 # Slax Reader CLI
 
-Use `reader-cli` to save URLs into the user's Slax Reader library.
+Use `reader-cli` to save URLs into the user's Slax Reader library, list saved bookmarks, and view bookmark details.
 
-## Before using commands
+## Before using authenticated commands
 
-Check login state with:
+Check login state before saving, listing, viewing, archiving, tagging, or otherwise accessing the user's Slax Reader account:
 
 ```bash
 reader-cli whoami --json
 ```
 
-If not logged in, ask the user for an API key or ask them to run:
+If not logged in, prefer asking the user to run interactive `reader-cli login` when they can use a terminal. If they cannot complete the interactive flow, offer `reader-cli login --api-key <key> --json` and ask for an API key only if they explicitly choose that path.
 
-```bash
-reader-cli login
-```
-
-Do not ask the user to paste an API key into the conversation unless they explicitly choose that flow.
+Do not require a login check before `login`, `logout`, `upgrade --check`, `skill --check`, or `skill --sync`.
 
 ## Commands
 
 | Task | Command |
 |------|---------|
-| Log in non-interactively | `reader-cli login --api-key <key> --json` |
 | Log in interactively | `reader-cli login` |
+| Log in non-interactively | `reader-cli login --api-key <key> --json` |
 | Log out | `reader-cli logout --json` |
+| Show account | `reader-cli whoami --json` |
 | Save URL | `reader-cli add <url> --json` |
 | Save with title | `reader-cli add <url> --title "Title" --json` |
 | Save with description | `reader-cli add <url> --description "Description" --json` |
 | Save with tags | `reader-cli add <url> --tags "tag1,tag2" --json` |
 | Archive URL | `reader-cli add <url> --archive --json` |
+| List bookmarks | `reader-cli list` |
+| List bookmarks by page | `reader-cli list --page <number> --size <number>` |
+| Filter bookmarks | `reader-cli list --filter <all\|inbox\|archive\|starred>` |
+| View bookmark detail | `reader-cli view <bookmark-id>` |
 | Check CLI update | `reader-cli upgrade --check --json` |
 | Sync skill | `reader-cli skill --sync --json` |
 | Check skill sync | `reader-cli skill --check --json` |
@@ -42,10 +43,18 @@ Do not ask the user to paste an API key into the conversation unless they explic
 ## Bookmark rules
 
 - Preserve the exact URL the user asked to save.
-- Add `--json` when you invoke commands so update hints are visible.
+- Add `--json` when you invoke commands that support it so update hints are visible.
 - Use comma-separated tags with `--tags "tag1,tag2"`.
 - Use `--archive` only when the user asks to archive/preserve content or when they explicitly approve archive mode.
 - If the user provides multiple URLs, save them one at a time so failures are isolated.
+
+## Listing and viewing bookmarks
+
+- Use `reader-cli list` when the user wants to see their saved bookmarks.
+- Use `reader-cli list --filter inbox`, `reader-cli list --filter archive`, or `reader-cli list --filter starred` when the user asks for a specific subset.
+- Use `--page` and `--size` when the user asks for pagination or a specific number of results.
+- Use `reader-cli view <bookmark-id>` when the user asks to open, inspect, summarize, or read details for a specific bookmark ID.
+- Do not guess bookmark IDs; ask the user for an ID or list bookmarks first.
 
 ## Update and skill hints
 
@@ -59,15 +68,19 @@ When `_hints.upgrade` appears, finish the user's current request first. Then tel
 reader-cli upgrade
 ```
 
+`reader-cli upgrade` also syncs the AI Agent skill when needed.
+
 ### `_hints.skill`
 
-When `_hints.skill` appears, finish the user's current request first. Then tell the user the installed AI Agent skill is out of sync with the CLI and offer to run:
+When `_hints.skill` appears, finish the user's current request first. Then tell the user the installed AI Agent skill is out of sync with the CLI and offer the same repair command:
 
 ```bash
-reader-cli skill --sync
+reader-cli upgrade
 ```
 
-After syncing the skill, tell the user to start a new AI Agent session so the updated skill is loaded.
+After the skill is synced, tell the user to restart the Agent so the updated skill is loaded. Resuming an old conversation after restart is fine.
+
+Use `reader-cli skill --sync --json` only as a direct manual fallback when `reader-cli upgrade` cannot be used.
 
 Do not silently ignore `_hints`.
 
