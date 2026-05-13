@@ -22,6 +22,8 @@ reader-cli login
 ```
 
 Do not require a login check before `login`, `logout`, `upgrade --check`, `skill --check`, or `skill --sync`.
+Prefer asking the user to run interactive `reader-cli login` when they can operate a terminal directly.
+Use `reader-cli login --api-key <key> --json` only when the user cannot complete the interactive flow, such as non-technical users needing step-by-step assistance or non-interactive agents like OpenClaw.
 Do not ask the user to paste an API key into the conversation unless they explicitly choose that flow.
 
 ## Commands
@@ -29,7 +31,7 @@ Do not ask the user to paste an API key into the conversation unless they explic
 | Task | Command |
 |------|---------|
 | Log in interactively | `reader-cli login` |
-| Log in with API key | Ask the user to run `reader-cli login` and enter the key through the CLI prompt; do not put API keys in shell commands. |
+| Log in non-interactively | `reader-cli login --api-key <key> --json` |
 | Log out | `reader-cli logout --json` |
 | Show account | `reader-cli whoami --json` |
 | Save URL | `reader-cli add <url> --json` |
@@ -71,7 +73,7 @@ When `_hints.skill` appears, finish the user's current request first. Then tell 
 reader-cli upgrade
 ```
 
-After the skill is synced, tell the user to start a new AI Agent session so the updated skill is loaded.
+After the skill is synced, tell the user to restart the Agent so the updated skill is loaded. Resuming an old conversation after restart is fine.
 
 Use `reader-cli skill --sync --json` only as a direct manual fallback when `reader-cli upgrade` cannot be used.
 
