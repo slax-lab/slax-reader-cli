@@ -37,34 +37,24 @@ export interface AddBookmarkResp {
   bmId: string
 }
 
-export interface BookmarkDetail {
+export interface BookmarkMetadata {
   bookmark_id?: number
+  bookmark_user_uuid: string
   title: string
   alias_title: string
   host_url: string
   target_url: string
-  content_icon: string
-  content_cover: string
   content_word_count?: number
-  content: string
   description?: string
   byline?: string
-  private_user?: number
   status: BookmarkParseStatus
   created_at?: string
-  updated_at?: string
-  published_at?: string
-  user_id: number
-  archived: 'inbox' | 'archive' | 'later'
-  starred: 'star' | 'unstar'
   tags: BookmarkTag[]
-  trashed_at: string | null
-  type: 'shortcut' | 'article'
-  overview: string
 }
 
 export interface BookmarkListItem {
   id: number
+  bookmark_user_uuid: string
   title: string
   alias_title: string
   host_url: string

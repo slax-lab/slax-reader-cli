@@ -76,7 +76,7 @@ reader-cli add https://example.com \
 reader-cli list
 
 # 查看书签详情
-reader-cli view <bookmark-id>
+reader-cli get <bookmark-id>
 ```
 
 ### 命令参考
@@ -143,14 +143,20 @@ reader-cli list --filter inbox --page 2
 reader-cli ls --size 10
 ```
 
-#### `reader-cli view <bookmark-id>`
+#### `reader-cli get <bookmark-id>`
 
-查看书签详情，包括元数据、概览、描述，以及可用时的正文内容。
+获取书签详情，包括元数据和正文内容。
+
+| 参数 | 说明 |
+|------|------|
+| `--markdown` | 以 Markdown 格式获取正文内容 |
+| `--json` | 输出 JSON |
 
 示例：
 
 ```bash
-reader-cli view 123
+reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38
+reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38 --markdown
 ```
 
 #### `reader-cli upgrade`
@@ -232,7 +238,7 @@ reader-cli skill --check
     -s, --size <number>              每页数量，默认 20
     -f, --filter <type>              all、inbox、archive 或 starred
 
-  reader-cli view <bookmark-id>      查看书签详情
+  reader-cli get <bookmark-id>      查看书签详情
 
   reader-cli whoami                 显示当前用户
   reader-cli logout                 清除凭证
