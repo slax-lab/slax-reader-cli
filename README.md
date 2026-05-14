@@ -240,6 +240,7 @@ Available commands:
     -f, --filter <type>              all, inbox, archive, or starred
 
   reader-cli get <bookmark-id>      Get bookmark detail
+    --markdown                       Fetch content as Markdown
 
   reader-cli whoami                 Show current user
   reader-cli logout                 Clear credentials
@@ -247,6 +248,7 @@ Available commands:
   reader-cli --help                 Full usage
 
 Notes:
+- All commands support --json for machine-readable output.
 - URLs without http(s):// are auto-prefixed with https://
 - If you get an auth error, ask the user to run: reader-cli login
 ```

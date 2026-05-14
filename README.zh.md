@@ -240,6 +240,7 @@ reader-cli skill --check
     -f, --filter <type>              all、inbox、archive 或 starred
 
   reader-cli get <bookmark-id>      获取书签详情
+    --markdown                       以 Markdown 格式获取正文内容
 
   reader-cli whoami                 显示当前用户
   reader-cli logout                 清除凭证
@@ -247,6 +248,7 @@ reader-cli skill --check
   reader-cli --help                 完整使用说明
 
 注意：
+- 所有命令均支持 --json 以输出机器可读格式。
 - 不带 http(s):// 的 URL 会自动补全为 https://
 - 如果遇到身份验证错误，请提示用户执行：reader-cli login
 ```
