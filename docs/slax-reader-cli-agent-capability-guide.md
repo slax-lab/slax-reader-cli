@@ -82,6 +82,7 @@ Web content vanishes. Blog posts get deleted, pages get restructured, paywalls g
 | Domain | What the CLI Can Do |
 |--------|-------------------|
 | Bookmarks | Save any URL with custom title, description, tags, and archive mode |
+| Browse | List saved bookmarks with filtering and pagination; get full bookmark detail and content |
 | Authentication | Login with API Key, logout, view current user info |
 | Tags | Organize bookmarks with comma-separated tags for easy retrieval |
 | Archive | Enable archive mode to preserve page content as-is |
@@ -99,6 +100,8 @@ Run `reader-cli --help` for the full overview.
 | Log out | `reader-cli logout` |
 | View current user | `reader-cli whoami` |
 | Save a bookmark | `reader-cli add <url> [-t title] [-d desc] [--tags t1,t2] [--archive]` |
+| List bookmarks | `reader-cli list [--page <n>] [--size <n>] [--filter all\|inbox\|archive\|starred]` |
+| Get bookmark detail | `reader-cli get <bookmark-id> [--markdown]` |
 | Check for updates | `reader-cli upgrade --check` |
 | Upgrade to latest | `reader-cli upgrade` |
 | Show help | `reader-cli --help` |

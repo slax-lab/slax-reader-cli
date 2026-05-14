@@ -23,8 +23,8 @@
 ## Features
 
 - 📌 **Save bookmarks by URL** — with optional title, description, tags, and archive mode
-- 📚 **Browse your library** — list bookmarks and view individual bookmark details
-- 👤 **Account management** — login, logout, and view current user info
+- 📚 **Browse your library** — list bookmarks and get individual bookmark details
+- 👤 **Account management** — login, logout, and get current user info
 - 🔄 **Auto update notifications** — notified of new versions after each command; upgrade in one step
 - 🤖 **AI Agent skill** — install a skill so your agent always knows how to use the CLI, with automatic sync hints when the CLI is upgraded
 
@@ -75,8 +75,8 @@ reader-cli add https://example.com \
 # List bookmarks
 reader-cli list
 
-# View bookmark detail
-reader-cli view <bookmark-id>
+# Get bookmark detail
+reader-cli get <bookmark-id>
 ```
 
 ### Command Reference
@@ -134,6 +134,7 @@ List your bookmarks. Alias: `reader-cli ls`.
 | `-p, --page <number>` | Page number (default: `1`) |
 | `-s, --size <number>` | Items per page (default: `20`) |
 | `-f, --filter <type>` | Filter: `all`, `inbox`, `archive`, or `starred` (default: `all`) |
+| `--json` | Output JSON |
 
 Examples:
 
@@ -143,14 +144,20 @@ reader-cli list --filter inbox --page 2
 reader-cli ls --size 10
 ```
 
-#### `reader-cli view <bookmark-id>`
+#### `reader-cli get <bookmark-id>`
 
-View bookmark detail, including metadata, overview, description, and extracted content when available.
+Get bookmark detail, including metadata and extracted content.
 
-Example:
+| Option | Description |
+|--------|-------------|
+| `--markdown` | Fetch content as Markdown instead of plain text |
+| `--json` | Output JSON |
+
+Examples:
 
 ```bash
-reader-cli view 123
+reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38
+reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38 --markdown
 ```
 
 #### `reader-cli upgrade`
@@ -232,7 +239,8 @@ Available commands:
     -s, --size <number>              Items per page, default 20
     -f, --filter <type>              all, inbox, archive, or starred
 
-  reader-cli view <bookmark-id>      View bookmark detail
+  reader-cli get <bookmark-id>      Get bookmark detail
+    --markdown                       Fetch content as Markdown
 
   reader-cli whoami                 Show current user
   reader-cli logout                 Clear credentials
@@ -240,6 +248,7 @@ Available commands:
   reader-cli --help                 Full usage
 
 Notes:
+- All commands support --json for machine-readable output.
 - URLs without http(s):// are auto-prefixed with https://
 - If you get an auth error, ask the user to run: reader-cli login
 ```

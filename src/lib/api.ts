@@ -62,6 +62,35 @@ export async function request<T = unknown>(
   return json.data
 }
 
+export async function requestText(
+  method: 'GET' | 'POST' | 'PUT' | 'DELETE',
+  path: string,
+  options: { headers?: Record<string, string>; body?: unknown } = {}
+): Promise<string> {
+  const apiKey = ensureApiKey()
+  const base = getApiBase()
+  const url = `${base}${path}`
+
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'X-API-Key': apiKey,
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+    body: options.body ? JSON.stringify(options.body) : undefined,
+    signal: AbortSignal.timeout(API_TIMEOUT_MS),
+  })
+
+  const text = await res.text()
+
+  if (!res.ok) {
+    throw new ApiError(res.status, res.status, text || res.statusText)
+  }
+
+  return text
+}
+
 function apiResponseFallbackMessage(data: unknown): string | undefined {
   if (typeof data === 'string') return data
   if (data == null) return undefined

@@ -23,7 +23,7 @@
 ## 功能特性
 
 - 📌 **通过 URL 收藏书签** — 支持自定义标题、描述、标签和归档模式
-- 📚 **浏览阅读库** — 列出书签并查看单个书签详情
+- 📚 **浏览阅读库** — 列出书签并获取单个书签详情
 - 👤 **账号管理** — 登录、登出、查看当前用户信息
 - 🔄 **自动检测新版本** — 每次命令执行后提示更新，一键升级
 - 🤖 **AI Agent Skill** — 安装 skill 让 Agent 始终了解如何使用 CLI，CLI 升级后自动提示同步
@@ -75,8 +75,8 @@ reader-cli add https://example.com \
 # 列出书签
 reader-cli list
 
-# 查看书签详情
-reader-cli view <bookmark-id>
+# 获取书签详情
+reader-cli get <bookmark-id>
 ```
 
 ### 命令参考
@@ -134,6 +134,7 @@ reader-cli add https://example.com --archive
 | `-p, --page <number>` | 页码（默认：`1`） |
 | `-s, --size <number>` | 每页数量（默认：`20`） |
 | `-f, --filter <type>` | 筛选类型：`all`、`inbox`、`archive` 或 `starred`（默认：`all`） |
+| `--json` | 输出 JSON |
 
 示例：
 
@@ -143,14 +144,20 @@ reader-cli list --filter inbox --page 2
 reader-cli ls --size 10
 ```
 
-#### `reader-cli view <bookmark-id>`
+#### `reader-cli get <bookmark-id>`
 
-查看书签详情，包括元数据、概览、描述，以及可用时的正文内容。
+获取书签详情，包括元数据和正文内容。
+
+| 参数 | 说明 |
+|------|------|
+| `--markdown` | 以 Markdown 格式获取正文内容 |
+| `--json` | 输出 JSON |
 
 示例：
 
 ```bash
-reader-cli view 123
+reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38
+reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38 --markdown
 ```
 
 #### `reader-cli upgrade`
@@ -232,7 +239,8 @@ reader-cli skill --check
     -s, --size <number>              每页数量，默认 20
     -f, --filter <type>              all、inbox、archive 或 starred
 
-  reader-cli view <bookmark-id>      查看书签详情
+  reader-cli get <bookmark-id>      获取书签详情
+    --markdown                       以 Markdown 格式获取正文内容
 
   reader-cli whoami                 显示当前用户
   reader-cli logout                 清除凭证
@@ -240,6 +248,7 @@ reader-cli skill --check
   reader-cli --help                 完整使用说明
 
 注意：
+- 所有命令均支持 --json 以输出机器可读格式。
 - 不带 http(s):// 的 URL 会自动补全为 https://
 - 如果遇到身份验证错误，请提示用户执行：reader-cli login
 ```

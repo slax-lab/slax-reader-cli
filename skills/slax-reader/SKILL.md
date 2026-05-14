@@ -1,15 +1,15 @@
 ---
 name: slax-reader
-description: "Use Slax Reader CLI to save URLs/bookmarks to the user's reading library, list and view bookmarks, authenticate with reader-cli, check account status, archive URLs, tag bookmarks, and handle reader-cli upgrade or skill sync hints. Trigger when the user asks to save, bookmark, archive, list, view, or organize web links with Slax Reader."
+description: "Use Slax Reader CLI to save URLs/bookmarks to the user's reading library, list and get bookmarks, authenticate with reader-cli, check account status, archive URLs, tag bookmarks, and handle reader-cli upgrade or skill sync hints. Trigger when the user asks to save, bookmark, archive, list, get, or organize web links with Slax Reader."
 ---
 
 # Slax Reader CLI
 
-Use `reader-cli` to save URLs into the user's Slax Reader library, list saved bookmarks, and view bookmark details.
+Use `reader-cli` to save URLs into the user's Slax Reader library, list saved bookmarks, and get bookmark details.
 
 ## Before using authenticated commands
 
-Check login state before saving, listing, viewing, archiving, tagging, or otherwise accessing the user's Slax Reader account:
+Check login state before saving, listing, getting, archiving, tagging, or otherwise accessing the user's Slax Reader account:
 
 ```bash
 reader-cli whoami --json
@@ -32,10 +32,11 @@ Do not require a login check before `login`, `logout`, `upgrade --check`, `skill
 | Save with description | `reader-cli add <url> --description "Description" --json` |
 | Save with tags | `reader-cli add <url> --tags "tag1,tag2" --json` |
 | Archive URL | `reader-cli add <url> --archive --json` |
-| List bookmarks | `reader-cli list` |
-| List bookmarks by page | `reader-cli list --page <number> --size <number>` |
-| Filter bookmarks | `reader-cli list --filter <all\|inbox\|archive\|starred>` |
-| View bookmark detail | `reader-cli view <bookmark-id>` |
+| List bookmarks | `reader-cli list --json` |
+| List bookmarks by page | `reader-cli list --page <number> --size <number> --json` |
+| Filter bookmarks | `reader-cli list --filter <all\|inbox\|archive\|starred> --json` |
+| Get bookmark detail | `reader-cli get <bookmark-id>` |
+| Get bookmark as Markdown | `reader-cli get <bookmark-id> --markdown` |
 | Check CLI update | `reader-cli upgrade --check --json` |
 | Sync skill | `reader-cli skill --sync --json` |
 | Check skill sync | `reader-cli skill --check --json` |
@@ -48,12 +49,13 @@ Do not require a login check before `login`, `logout`, `upgrade --check`, `skill
 - Use `--archive` only when the user asks to archive/preserve content or when they explicitly approve archive mode.
 - If the user provides multiple URLs, save them one at a time so failures are isolated.
 
-## Listing and viewing bookmarks
+## Listing and getting bookmarks
 
 - Use `reader-cli list` when the user wants to see their saved bookmarks.
 - Use `reader-cli list --filter inbox`, `reader-cli list --filter archive`, or `reader-cli list --filter starred` when the user asks for a specific subset.
 - Use `--page` and `--size` when the user asks for pagination or a specific number of results.
-- Use `reader-cli view <bookmark-id>` when the user asks to open, inspect, summarize, or read details for a specific bookmark ID.
+- Use `reader-cli get <bookmark-id>` when the user asks to open, inspect, summarize, or read details for a specific bookmark ID.
+- Use `reader-cli get <bookmark-id> --markdown` when the user wants the content in Markdown format (e.g. for further processing or display).
 - Do not guess bookmark IDs; ask the user for an ID or list bookmarks first.
 
 ## Update and skill hints
