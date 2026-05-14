@@ -140,7 +140,7 @@ export function registerBookmarkCommands(program: Command): void {
         action: async () => {
           const metadata = await request<BookmarkMetadata>(
             'GET',
-            `/v1/bookmark/metadata?bookmark_id=${id}`
+            `/v1/bookmark/metadata?bookmark_uid=${id}`
           )
           const contentHeaders: Record<string, string> = opts.markdown
             ? { accept: 'text/markdown' }
@@ -150,7 +150,7 @@ export function registerBookmarkCommands(program: Command): void {
             content = await requestText(
               'POST',
               '/v1/bookmark/content',
-              { headers: contentHeaders, body: { bookmark_user_uuid: metadata.bookmark_user_uuid } }
+              { headers: contentHeaders, body: { bookmark_uid: id } }
             )
           } catch (err) {
             // only swallow 404 — content not yet generated; rethrow all other errors
