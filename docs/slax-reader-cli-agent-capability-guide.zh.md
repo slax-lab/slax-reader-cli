@@ -82,6 +82,7 @@ Code Review 或调试过程中，Agent 找到了相关文档、Stack Overflow �
 | 业务域 | CLI 能做什么 |
 |--------|-----------|
 | 书签收藏 | 保存任意 URL，支持自定义标题、描述、标签和归档模式 |
+| 浏览阅读库 | 列出书签（支持筛选和分页）；获取书签详情和正文内容 |
 | 身份验证 | 通过 API Key 登录、登出、查看当前用户信息 |
 | 标签管理 | 使用逗号分隔的标签组织书签，便于检索 |
 | 内容归档 | 启用归档模式，保留页面原始内容 |
@@ -99,6 +100,8 @@ Code Review 或调试过程中，Agent 找到了相关文档、Stack Overflow �
 | 登出 | `reader-cli logout` |
 | 查看当前用户 | `reader-cli whoami` |
 | 保存书签 | `reader-cli add <url> [-t 标题] [-d 描述] [--tags 标签1,标签2] [--archive]` |
+| 列出书签 | `reader-cli list [--page <n>] [--size <n>] [--filter all\|inbox\|archive\|starred]` |
+| 获取书签详情 | `reader-cli get <bookmark-id> [--markdown]` |
 | 检查更新 | `reader-cli upgrade --check` |
 | 升级到最新版 | `reader-cli upgrade` |
 | 查看帮助 | `reader-cli --help` |
