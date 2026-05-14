@@ -75,7 +75,7 @@ reader-cli add https://example.com \
 # 列出书签
 reader-cli list
 
-# 查看书签详情
+# 获取书签详情
 reader-cli get <bookmark-id>
 ```
 

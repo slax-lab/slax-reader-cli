@@ -75,7 +75,7 @@ reader-cli add https://example.com \
 # List bookmarks
 reader-cli list
 
-# View bookmark detail
+# Get bookmark detail
 reader-cli get <bookmark-id>
 ```
 

@@ -35,8 +35,8 @@ Do not require a login check before `login`, `logout`, `upgrade --check`, `skill
 | List bookmarks | `reader-cli list --json` |
 | List bookmarks by page | `reader-cli list --page <number> --size <number> --json` |
 | Filter bookmarks | `reader-cli list --filter <all\|inbox\|archive\|starred> --json` |
-| View bookmark detail | `reader-cli get <bookmark-id>` |
-| View bookmark as Markdown | `reader-cli get <bookmark-id> --markdown` |
+| Get bookmark detail | `reader-cli get <bookmark-id>` |
+| Get bookmark as Markdown | `reader-cli get <bookmark-id> --markdown` |
 | Check CLI update | `reader-cli upgrade --check --json` |
 | Sync skill | `reader-cli skill --sync --json` |
 | Check skill sync | `reader-cli skill --check --json` |
