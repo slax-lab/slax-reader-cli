@@ -23,7 +23,7 @@
 ## 功能特性
 
 - 📌 **通过 URL 收藏书签** — 支持自定义标题、描述、标签和归档模式
-- 📚 **浏览阅读库** — 列出书签并查看单个书签详情
+- 📚 **浏览阅读库** — 列出书签并获取单个书签详情
 - 👤 **账号管理** — 登录、登出、查看当前用户信息
 - 🔄 **自动检测新版本** — 每次命令执行后提示更新，一键升级
 - 🤖 **AI Agent Skill** — 安装 skill 让 Agent 始终了解如何使用 CLI，CLI 升级后自动提示同步
@@ -134,6 +134,7 @@ reader-cli add https://example.com --archive
 | `-p, --page <number>` | 页码（默认：`1`） |
 | `-s, --size <number>` | 每页数量（默认：`20`） |
 | `-f, --filter <type>` | 筛选类型：`all`、`inbox`、`archive` 或 `starred`（默认：`all`） |
+| `--json` | 输出 JSON |
 
 示例：
 
@@ -238,7 +239,7 @@ reader-cli skill --check
     -s, --size <number>              每页数量，默认 20
     -f, --filter <type>              all、inbox、archive 或 starred
 
-  reader-cli get <bookmark-id>      查看书签详情
+  reader-cli get <bookmark-id>      获取书签详情
 
   reader-cli whoami                 显示当前用户
   reader-cli logout                 清除凭证

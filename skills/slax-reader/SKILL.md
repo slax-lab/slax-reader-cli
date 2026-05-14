@@ -32,9 +32,9 @@ Do not require a login check before `login`, `logout`, `upgrade --check`, `skill
 | Save with description | `reader-cli add <url> --description "Description" --json` |
 | Save with tags | `reader-cli add <url> --tags "tag1,tag2" --json` |
 | Archive URL | `reader-cli add <url> --archive --json` |
-| List bookmarks | `reader-cli list` |
-| List bookmarks by page | `reader-cli list --page <number> --size <number>` |
-| Filter bookmarks | `reader-cli list --filter <all\|inbox\|archive\|starred>` |
+| List bookmarks | `reader-cli list --json` |
+| List bookmarks by page | `reader-cli list --page <number> --size <number> --json` |
+| Filter bookmarks | `reader-cli list --filter <all\|inbox\|archive\|starred> --json` |
 | View bookmark detail | `reader-cli get <bookmark-id>` |
 | View bookmark as Markdown | `reader-cli get <bookmark-id> --markdown` |
 | Check CLI update | `reader-cli upgrade --check --json` |

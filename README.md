@@ -134,6 +134,7 @@ List your bookmarks. Alias: `reader-cli ls`.
 | `-p, --page <number>` | Page number (default: `1`) |
 | `-s, --size <number>` | Items per page (default: `20`) |
 | `-f, --filter <type>` | Filter: `all`, `inbox`, `archive`, or `starred` (default: `all`) |
+| `--json` | Output JSON |
 
 Examples:
 
@@ -238,7 +239,7 @@ Available commands:
     -s, --size <number>              Items per page, default 20
     -f, --filter <type>              all, inbox, archive, or starred
 
-  reader-cli get <bookmark-id>      View bookmark detail
+  reader-cli get <bookmark-id>      Get bookmark detail
 
   reader-cli whoami                 Show current user
   reader-cli logout                 Clear credentials
