@@ -28,7 +28,8 @@ interface BookmarkListOutputItem {
   title: string
   id: string
   site: string | null
-  desc: string | null
+  host: string | null
+  created: string | null
 }
 
 interface BookmarkDetailOutput {
@@ -170,8 +171,9 @@ function bookmarkListOutput(items: BookmarkListItem[]): BookmarkListOutputItem[]
   return items.map(item => ({
     title: item.alias_title || item.title || '(untitled)',
     id: item.bookmark_user_uuid,
-    site: item.site_name || item.host_url || null,
-    desc: item.description || null,
+    site: item.site_name || null,
+    host: item.host_url || null,
+    created: item.created_at || null,
   }))
 }
 
@@ -187,7 +189,8 @@ function renderBookmarkList(items: BookmarkListOutputItem[], page: number, size:
     console.log(chalk.bold(item.title))
     console.log(`Id: ${item.id}`)
     console.log(`Site: ${item.site ?? ''}`)
-    console.log(`Desc: ${item.desc ?? ''}`)
+    console.log(`Host: ${item.host ?? ''}`)
+    console.log(`Created: ${item.created ? new Date(item.created).toLocaleString() : ''}`)
     console.log()
   }
   const nextPage = page + 1
