@@ -1,6 +1,6 @@
 {
   "name": "@slax-lab/reader-cli",
-  "version": "0.1.0-alpha.13",
+  "version": "0.1.1",
   "description": "Slax Reader API client CLI - manage bookmarks from the command line",
   "type": "module",
   "bin": {
