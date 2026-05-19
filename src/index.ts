@@ -6,6 +6,7 @@ import { registerSkillCommands } from './commands/skill.js'
 import { registerInstallCommand } from './commands/install.js'
 import { initSkillCheck } from './lib/skillscheck.js'
 import { initUpgradeCheck } from './lib/version.js'
+import { track } from './lib/track.js'
 
 declare const __VERSION__: string
 
@@ -18,6 +19,10 @@ program
 
 await initUpgradeCheck(__VERSION__)
 await initSkillCheck(__VERSION__)
+
+program.hook('preAction', () => {
+  track(__VERSION__)
+})
 
 registerAuthCommands(program)
 registerBookmarkCommands(program)
