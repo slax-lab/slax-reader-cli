@@ -1,7 +1,7 @@
 import { Command } from 'commander'
 import chalk from 'chalk'
 import { request, requestText, ApiError } from '../lib/api.js'
-import { commandResult, printJsonFailure, runCommand } from '../lib/command.js'
+import { commandResult, printJsonFailure, runCommand, CommandError } from '../lib/command.js'
 import type { AddUrlBookmarkReq, BookmarkMetadata, BookmarkListItem, ArchiveBookmarkReq, StarBookmarkReq, TrashBookmarkReq } from '../types.js'
 
 interface AddOptions {
@@ -247,6 +247,49 @@ export function registerBookmarkCommands(program: Command): void {
         },
       })
     })
+
+  program
+    .command('delete <id>')
+    .description('Move a bookmark to trash (recoverable with `restore`)')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Moving bookmark to trash...',
+        failMessage: 'Failed to delete bookmark',
+        action: async () => {
+          const bookmarkId = await resolveBookmarkId(id)
+          const body: TrashBookmarkReq = { bookmark_id: bookmarkId }
+          await request<unknown>('POST', '/v1/bookmark/trash', body)
+          return commandResult({
+            data: { id, trashed: true },
+            render: () => {
+              console.log(chalk.green(`Bookmark moved to trash: ${chalk.bold(id)}`))
+              console.log(chalk.dim(`Restore with: reader-cli restore ${id}`))
+            },
+          })
+        },
+      })
+    })
+
+  program
+    .command('restore <id>')
+    .description('Restore a bookmark from trash')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Restoring bookmark...',
+        failMessage: 'Failed to restore bookmark',
+        action: async () => {
+          const bookmarkId = await resolveBookmarkId(id)
+          const body: TrashBookmarkReq = { bookmark_id: bookmarkId }
+          await request<unknown>('POST', '/v1/bookmark/trash_revert', body)
+          return commandResult({
+            data: { id, trashed: false },
+            message: chalk.green(`Bookmark restored: ${chalk.bold(id)}`),
+          })
+        },
+      })
+    })
 }
 
 function bookmarkListOutput(items: BookmarkListItem[]): BookmarkListOutputItem[] {
@@ -315,4 +358,12 @@ function renderBookmarkDetail(detail: BookmarkDetailOutput): void {
   console.log()
   console.log(chalk.bold('Content'))
   console.log(detail.content ?? '')
+}
+
+async function resolveBookmarkId(uid: string): Promise<number> {
+  const metadata = await request<BookmarkMetadata>('GET', `/v1/bookmark/metadata?bookmark_uid=${uid}`)
+  if (metadata.bookmark_id == null) {
+    throw new CommandError('bookmark_id_missing', `Could not resolve a numeric bookmark id for ${uid}.`)
+  }
+  return metadata.bookmark_id
 }
