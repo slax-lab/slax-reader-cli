@@ -2,7 +2,7 @@ import { Command } from 'commander'
 import chalk from 'chalk'
 import { request, requestText, ApiError } from '../lib/api.js'
 import { commandResult, printJsonFailure, runCommand } from '../lib/command.js'
-import type { AddUrlBookmarkReq, BookmarkMetadata, BookmarkListItem } from '../types.js'
+import type { AddUrlBookmarkReq, BookmarkMetadata, BookmarkListItem, ArchiveBookmarkReq, StarBookmarkReq, TrashBookmarkReq } from '../types.js'
 
 interface AddOptions {
   title?: string
@@ -22,6 +22,10 @@ interface ListOptions {
 interface GetOptions {
   json?: boolean
   markdown?: boolean
+}
+
+interface BookmarkActionOptions {
+  json?: boolean
 }
 
 interface BookmarkListOutputItem {
@@ -163,6 +167,44 @@ export function registerBookmarkCommands(program: Command): void {
           return commandResult({
             data,
             render: renderBookmarkDetail,
+          })
+        },
+      })
+    })
+
+  program
+    .command('archive <id>')
+    .description('Move a bookmark to your archive')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Archiving bookmark...',
+        failMessage: 'Failed to archive bookmark',
+        action: async () => {
+          const body: ArchiveBookmarkReq = { bookmark_uid: id, status: 'archive' }
+          await request<unknown>('POST', '/v1/bookmark/archive', body)
+          return commandResult({
+            data: { id, status: 'archive' },
+            message: chalk.green(`Bookmark archived: ${chalk.bold(id)}`),
+          })
+        },
+      })
+    })
+
+  program
+    .command('unarchive <id>')
+    .description('Move a bookmark back to your inbox')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Unarchiving bookmark...',
+        failMessage: 'Failed to unarchive bookmark',
+        action: async () => {
+          const body: ArchiveBookmarkReq = { bookmark_uid: id, status: 'inbox' }
+          await request<unknown>('POST', '/v1/bookmark/archive', body)
+          return commandResult({
+            data: { id, status: 'inbox' },
+            message: chalk.green(`Bookmark moved to inbox: ${chalk.bold(id)}`),
           })
         },
       })
