@@ -66,6 +66,7 @@ Do not require a login check before `login`, `logout`, `upgrade --check`, `skill
 
 ## Organizing bookmarks
 
+- `add <url> --archive` is a save-time mode for a *new* URL; `archive <bookmark-id>` moves an *already-saved* bookmark out of the inbox. They are unrelated — do not confuse them.
 - Use `reader-cli archive <bookmark-id>` when the user wants to archive a bookmark; use `reader-cli unarchive <bookmark-id>` to move it back to the inbox.
 - Use `reader-cli star <bookmark-id>` / `reader-cli unstar <bookmark-id>` when the user wants to star or unstar a bookmark.
 - Use `reader-cli delete <bookmark-id>` to delete a bookmark — this is recoverable, not permanent. Use `reader-cli restore <bookmark-id>` to undo it.

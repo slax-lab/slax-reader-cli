@@ -163,7 +163,7 @@ reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38 --markdown
 
 #### `reader-cli archive <bookmark-id>`
 
-将书签移至归档。
+将书签移至归档。注意与 `add --archive`（保存时的内容保留模式）区分——这里是把已保存的书签移出收件箱。
 
 | 参数 | 说明 |
 |------|------|

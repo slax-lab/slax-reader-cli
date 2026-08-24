@@ -163,7 +163,7 @@ reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38 --markdown
 
 #### `reader-cli archive <bookmark-id>`
 
-Move a bookmark to your archive.
+Move a bookmark to your archive. Not to be confused with `add --archive` (a save-time content-preservation mode) — this moves an already-saved bookmark out of the inbox.
 
 | Option | Description |
 |--------|-------------|
