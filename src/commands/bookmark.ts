@@ -209,6 +209,44 @@ export function registerBookmarkCommands(program: Command): void {
         },
       })
     })
+
+  program
+    .command('star <id>')
+    .description('Star a bookmark')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Starring bookmark...',
+        failMessage: 'Failed to star bookmark',
+        action: async () => {
+          const body: StarBookmarkReq = { bookmark_uid: id, status: 'star' }
+          await request<unknown>('POST', '/v1/bookmark/star', body)
+          return commandResult({
+            data: { id, starred: true },
+            message: chalk.green(`Bookmark starred: ${chalk.bold(id)}`),
+          })
+        },
+      })
+    })
+
+  program
+    .command('unstar <id>')
+    .description('Remove the star from a bookmark')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Unstarring bookmark...',
+        failMessage: 'Failed to unstar bookmark',
+        action: async () => {
+          const body: StarBookmarkReq = { bookmark_uid: id, status: 'unstar' }
+          await request<unknown>('POST', '/v1/bookmark/star', body)
+          return commandResult({
+            data: { id, starred: false },
+            message: chalk.green(`Star removed: ${chalk.bold(id)}`),
+          })
+        },
+      })
+    })
 }
 
 function bookmarkListOutput(items: BookmarkListItem[]): BookmarkListOutputItem[] {
