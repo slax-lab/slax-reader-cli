@@ -23,7 +23,8 @@
 ## Features
 
 - 📌 **Save bookmarks by URL** — with optional title, description, tags, and archive mode
-- 📚 **Browse your library** — list bookmarks and get individual bookmark details
+- 📚 **Browse your library** — list bookmarks (with snapshot and origin URLs) and get individual bookmark details
+- 🗂️ **Organize bookmarks** — archive, unarchive, star, unstar, delete, and restore bookmarks
 - 👤 **Account management** — login, logout, and get current user info
 - 🔄 **Auto update notifications** — notified of new versions after each command; upgrade in one step
 - 🤖 **AI Agent skill** — install a skill so your agent always knows how to use the CLI, with automatic sync hints when the CLI is upgraded
@@ -160,6 +161,54 @@ reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38
 reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38 --markdown
 ```
 
+#### `reader-cli archive <bookmark-id>`
+
+Move a bookmark to your archive.
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Output JSON |
+
+#### `reader-cli unarchive <bookmark-id>`
+
+Move a bookmark back to your inbox.
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Output JSON |
+
+#### `reader-cli star <bookmark-id>`
+
+Star a bookmark.
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Output JSON |
+
+#### `reader-cli unstar <bookmark-id>`
+
+Remove the star from a bookmark.
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Output JSON |
+
+#### `reader-cli delete <bookmark-id>`
+
+Move a bookmark to trash. Recoverable with `reader-cli restore <bookmark-id>`.
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Output JSON |
+
+#### `reader-cli restore <bookmark-id>`
+
+Restore a bookmark that was previously deleted.
+
+| Option | Description |
+|--------|-------------|
+| `--json` | Output JSON |
+
 #### `reader-cli upgrade`
 
 Upgrade the CLI to the latest version.
@@ -241,6 +290,13 @@ Available commands:
 
   reader-cli get <bookmark-id>      Get bookmark detail
     --markdown                       Fetch content as Markdown
+
+  reader-cli archive <bookmark-id>  Move a bookmark to archive
+  reader-cli unarchive <bookmark-id> Move a bookmark back to inbox
+  reader-cli star <bookmark-id>     Star a bookmark
+  reader-cli unstar <bookmark-id>   Remove a bookmark's star
+  reader-cli delete <bookmark-id>   Move a bookmark to trash (recoverable)
+  reader-cli restore <bookmark-id>  Restore a bookmark from trash
 
   reader-cli whoami                 Show current user
   reader-cli logout                 Clear credentials

@@ -23,7 +23,8 @@
 ## 功能特性
 
 - 📌 **通过 URL 收藏书签** — 支持自定义标题、描述、标签和归档模式
-- 📚 **浏览阅读库** — 列出书签并获取单个书签详情
+- 📚 **浏览阅读库** — 列出书签（含快照与原始链接）并获取单个书签详情
+- 🗂️ **整理书签** — 归档、取消归档、加星、取消加星、删除和恢复书签
 - 👤 **账号管理** — 登录、登出、查看当前用户信息
 - 🔄 **自动检测新版本** — 每次命令执行后提示更新，一键升级
 - 🤖 **AI Agent Skill** — 安装 skill 让 Agent 始终了解如何使用 CLI，CLI 升级后自动提示同步
@@ -160,6 +161,54 @@ reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38
 reader-cli get fe32cc83-0766-45ad-bbb9-957bd3e78f38 --markdown
 ```
 
+#### `reader-cli archive <bookmark-id>`
+
+将书签移至归档。
+
+| 参数 | 说明 |
+|------|------|
+| `--json` | 输出 JSON |
+
+#### `reader-cli unarchive <bookmark-id>`
+
+将书签移回收件箱。
+
+| 参数 | 说明 |
+|------|------|
+| `--json` | 输出 JSON |
+
+#### `reader-cli star <bookmark-id>`
+
+给书签加星。
+
+| 参数 | 说明 |
+|------|------|
+| `--json` | 输出 JSON |
+
+#### `reader-cli unstar <bookmark-id>`
+
+取消书签的星标。
+
+| 参数 | 说明 |
+|------|------|
+| `--json` | 输出 JSON |
+
+#### `reader-cli delete <bookmark-id>`
+
+将书签移至回收站，可通过 `reader-cli restore <bookmark-id>` 恢复。
+
+| 参数 | 说明 |
+|------|------|
+| `--json` | 输出 JSON |
+
+#### `reader-cli restore <bookmark-id>`
+
+恢复此前被删除的书签。
+
+| 参数 | 说明 |
+|------|------|
+| `--json` | 输出 JSON |
+
 #### `reader-cli upgrade`
 
 升级 CLI 到最新版本。
@@ -241,6 +290,13 @@ reader-cli skill --check
 
   reader-cli get <bookmark-id>      获取书签详情
     --markdown                       以 Markdown 格式获取正文内容
+
+  reader-cli archive <bookmark-id>  将书签移至归档
+  reader-cli unarchive <bookmark-id> 将书签移回收件箱
+  reader-cli star <bookmark-id>     给书签加星
+  reader-cli unstar <bookmark-id>   取消书签的星标
+  reader-cli delete <bookmark-id>   将书签移至回收站（可恢复）
+  reader-cli restore <bookmark-id>  从回收站恢复书签
 
   reader-cli whoami                 显示当前用户
   reader-cli logout                 清除凭证
