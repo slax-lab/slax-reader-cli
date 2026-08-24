@@ -30,6 +30,8 @@ interface BookmarkListOutputItem {
   site: string | null
   host: string | null
   created: string | null
+  snapshot: string
+  origin: string
 }
 
 interface BookmarkDetailOutput {
@@ -174,6 +176,8 @@ function bookmarkListOutput(items: BookmarkListItem[]): BookmarkListOutputItem[]
     site: item.site_name || null,
     host: item.host_url || null,
     created: item.created_at || null,
+    snapshot: `https://r.slax.com/b/${item.bookmark_user_uuid}`,
+    origin: item.target_url,
   }))
 }
 
@@ -191,6 +195,8 @@ function renderBookmarkList(items: BookmarkListOutputItem[], page: number, size:
     console.log(`Site: ${item.site ?? ''}`)
     console.log(`Host: ${item.host ?? ''}`)
     console.log(`Created: ${item.created ? new Date(item.created).toLocaleString() : ''}`)
+    console.log(`Snapshot: ${item.snapshot}`)
+    console.log(`Origin: ${item.origin}`)
     console.log()
   }
   const nextPage = page + 1
