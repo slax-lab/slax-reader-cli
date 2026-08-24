@@ -86,6 +86,7 @@ Web content vanishes. Blog posts get deleted, pages get restructured, paywalls g
 | Authentication | Login with API Key, logout, view current user info |
 | Tags | Organize bookmarks with comma-separated tags for easy retrieval |
 | Archive | Enable archive mode to preserve page content as-is |
+| Organize | Archive, unarchive, star, unstar, delete, and restore saved bookmarks |
 | Updates | Auto-detect new CLI versions, one-command upgrade |
 
 ---
@@ -102,6 +103,12 @@ Run `reader-cli --help` for the full overview.
 | Save a bookmark | `reader-cli add <url> [-t title] [-d desc] [--tags t1,t2] [--archive]` |
 | List bookmarks | `reader-cli list [--page <n>] [--size <n>] [--filter all\|inbox\|archive\|starred]` |
 | Get bookmark detail | `reader-cli get <bookmark-id> [--markdown]` |
+| Archive a bookmark | `reader-cli archive <bookmark-id>` |
+| Unarchive a bookmark | `reader-cli unarchive <bookmark-id>` |
+| Star a bookmark | `reader-cli star <bookmark-id>` |
+| Unstar a bookmark | `reader-cli unstar <bookmark-id>` |
+| Delete a bookmark (recoverable) | `reader-cli delete <bookmark-id>` |
+| Restore a deleted bookmark | `reader-cli restore <bookmark-id>` |
 | Check for updates | `reader-cli upgrade --check` |
 | Upgrade to latest | `reader-cli upgrade` |
 | Show help | `reader-cli --help` |

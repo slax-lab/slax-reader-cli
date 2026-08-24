@@ -86,6 +86,7 @@ Code Review 或调试过程中，Agent 找到了相关文档、Stack Overflow �
 | 身份验证 | 通过 API Key 登录、登出、查看当前用户信息 |
 | 标签管理 | 使用逗号分隔的标签组织书签，便于检索 |
 | 内容归档 | 启用归档模式，保留页面原始内容 |
+| 书签整理 | 归档、取消归档、加星、取消加星、删除、恢复已保存的书签 |
 | 版本更新 | 自动检测新版本，一键升级 |
 
 ---
@@ -102,6 +103,12 @@ Code Review 或调试过程中，Agent 找到了相关文档、Stack Overflow �
 | 保存书签 | `reader-cli add <url> [-t 标题] [-d 描述] [--tags 标签1,标签2] [--archive]` |
 | 列出书签 | `reader-cli list [--page <n>] [--size <n>] [--filter all\|inbox\|archive\|starred]` |
 | 获取书签详情 | `reader-cli get <bookmark-id> [--markdown]` |
+| 归档书签 | `reader-cli archive <bookmark-id>` |
+| 取消归档 | `reader-cli unarchive <bookmark-id>` |
+| 给书签加星 | `reader-cli star <bookmark-id>` |
+| 取消加星 | `reader-cli unstar <bookmark-id>` |
+| 删除书签（可恢复） | `reader-cli delete <bookmark-id>` |
+| 恢复已删除书签 | `reader-cli restore <bookmark-id>` |
 | 检查更新 | `reader-cli upgrade --check` |
 | 升级到最新版 | `reader-cli upgrade` |
 | 查看帮助 | `reader-cli --help` |
