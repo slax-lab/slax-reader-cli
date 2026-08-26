@@ -157,7 +157,7 @@ export function registerBookmarkCommands(program: Command): void {
             // only swallow 404 — content not yet generated; rethrow all other errors
             if (!(err instanceof ApiError && err.statusCode === 404)) throw err
           }
-          const data = bookmarkDetailOutput(metadata, content)
+          const data = bookmarkDetailOutput(id, metadata, content)
           return commandResult({
             data,
             render: renderBookmarkDetail,
@@ -199,7 +199,7 @@ function renderBookmarkList(items: BookmarkListOutputItem[], page: number, size:
   console.log(chalk.dim(`AI paging hint: current page is ${page}; request the next page with ${chalk.bold(`reader-cli list --page ${nextPage} --size ${size} --filter ${filter}`)}${previousPage ? `, or the previous page with ${chalk.bold(`reader-cli list --page ${previousPage} --size ${size} --filter ${filter}`)}` : ''}.`))
 }
 
-function bookmarkDetailOutput(metadata: BookmarkMetadata, content: string | null): BookmarkDetailOutput {
+function bookmarkDetailOutput(bmUid: string, metadata: BookmarkMetadata, content: string | null): BookmarkDetailOutput {
   return {
     title: metadata.alias_title || metadata.title,
     author: metadata.byline || null,
@@ -209,7 +209,7 @@ function bookmarkDetailOutput(metadata: BookmarkMetadata, content: string | null
     created: metadata.created_at ?? null,
     words: metadata.content_word_count ?? null,
     origin: metadata.target_url,
-    snapshot: `https://r.slax.com/bookmarks/${metadata.bookmark_id}`,
+    snapshot: `https://r.slax.com/b/${bmUid}`,
     content,
   }
 }
