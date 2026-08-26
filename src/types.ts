@@ -23,6 +23,20 @@ export interface AddUrlBookmarkReq {
 
 export interface AddUrlBookmarkResp {}
 
+export interface ArchiveBookmarkReq {
+  bookmark_uid: string
+  status: 'inbox' | 'archive' | 'later'
+}
+
+export interface StarBookmarkReq {
+  bookmark_uid: string
+  status: 'star' | 'unstar'
+}
+
+export interface TrashBookmarkReq {
+  bookmark_id: number
+}
+
 export interface AddBookmarkReq {
   target_url: string
   target_title: string

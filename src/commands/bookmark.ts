@@ -1,8 +1,8 @@
 import { Command } from 'commander'
 import chalk from 'chalk'
 import { request, requestText, ApiError } from '../lib/api.js'
-import { commandResult, printJsonFailure, runCommand } from '../lib/command.js'
-import type { AddUrlBookmarkReq, BookmarkMetadata, BookmarkListItem } from '../types.js'
+import { commandResult, printJsonFailure, runCommand, CommandError } from '../lib/command.js'
+import type { AddUrlBookmarkReq, BookmarkMetadata, BookmarkListItem, ArchiveBookmarkReq, StarBookmarkReq, TrashBookmarkReq } from '../types.js'
 
 interface AddOptions {
   title?: string
@@ -24,12 +24,18 @@ interface GetOptions {
   markdown?: boolean
 }
 
+interface BookmarkActionOptions {
+  json?: boolean
+}
+
 interface BookmarkListOutputItem {
   title: string
   id: string
   site: string | null
   host: string | null
   created: string | null
+  snapshot: string
+  origin: string
 }
 
 interface BookmarkDetailOutput {
@@ -157,10 +163,129 @@ export function registerBookmarkCommands(program: Command): void {
             // only swallow 404 — content not yet generated; rethrow all other errors
             if (!(err instanceof ApiError && err.statusCode === 404)) throw err
           }
-          const data = bookmarkDetailOutput(metadata, content)
+          const data = bookmarkDetailOutput(id, metadata, content)
           return commandResult({
             data,
             render: renderBookmarkDetail,
+          })
+        },
+      })
+    })
+
+  program
+    .command('archive <id>')
+    .description('Move a bookmark to your archive')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Archiving bookmark...',
+        failMessage: 'Failed to archive bookmark',
+        action: async () => {
+          const body: ArchiveBookmarkReq = { bookmark_uid: id, status: 'archive' }
+          await request<unknown>('POST', '/v1/bookmark/archive', body)
+          return commandResult({
+            data: { id, status: 'archive' },
+            message: chalk.green(`Bookmark archived: ${chalk.bold(id)}`),
+          })
+        },
+      })
+    })
+
+  program
+    .command('unarchive <id>')
+    .description('Move a bookmark back to your inbox')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Unarchiving bookmark...',
+        failMessage: 'Failed to unarchive bookmark',
+        action: async () => {
+          const body: ArchiveBookmarkReq = { bookmark_uid: id, status: 'inbox' }
+          await request<unknown>('POST', '/v1/bookmark/archive', body)
+          return commandResult({
+            data: { id, status: 'inbox' },
+            message: chalk.green(`Bookmark moved to inbox: ${chalk.bold(id)}`),
+          })
+        },
+      })
+    })
+
+  program
+    .command('star <id>')
+    .description('Star a bookmark')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Starring bookmark...',
+        failMessage: 'Failed to star bookmark',
+        action: async () => {
+          const body: StarBookmarkReq = { bookmark_uid: id, status: 'star' }
+          await request<unknown>('POST', '/v1/bookmark/star', body)
+          return commandResult({
+            data: { id, starred: true },
+            message: chalk.green(`Bookmark starred: ${chalk.bold(id)}`),
+          })
+        },
+      })
+    })
+
+  program
+    .command('unstar <id>')
+    .description('Remove the star from a bookmark')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Unstarring bookmark...',
+        failMessage: 'Failed to unstar bookmark',
+        action: async () => {
+          const body: StarBookmarkReq = { bookmark_uid: id, status: 'unstar' }
+          await request<unknown>('POST', '/v1/bookmark/star', body)
+          return commandResult({
+            data: { id, starred: false },
+            message: chalk.green(`Star removed: ${chalk.bold(id)}`),
+          })
+        },
+      })
+    })
+
+  program
+    .command('delete <id>')
+    .description('Move a bookmark to trash (recoverable with `restore`)')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Moving bookmark to trash...',
+        failMessage: 'Failed to delete bookmark',
+        action: async () => {
+          const bookmarkId = await resolveBookmarkId(id)
+          const body: TrashBookmarkReq = { bookmark_id: bookmarkId }
+          await request<unknown>('POST', '/v1/bookmark/trash', body)
+          return commandResult({
+            data: { id, trashed: true },
+            render: () => {
+              console.log(chalk.green(`Bookmark moved to trash: ${chalk.bold(id)}`))
+              console.log(chalk.dim(`Restore with: reader-cli restore ${id}`))
+            },
+          })
+        },
+      })
+    })
+
+  program
+    .command('restore <id>')
+    .description('Restore a bookmark from trash')
+    .option('--json', 'Output JSON')
+    .action(async (id: string, opts: BookmarkActionOptions) => {
+      await runCommand(opts, {
+        loading: 'Restoring bookmark...',
+        failMessage: 'Failed to restore bookmark',
+        action: async () => {
+          const bookmarkId = await resolveBookmarkId(id)
+          const body: TrashBookmarkReq = { bookmark_id: bookmarkId }
+          await request<unknown>('POST', '/v1/bookmark/trash_revert', body)
+          return commandResult({
+            data: { id, trashed: false },
+            message: chalk.green(`Bookmark restored: ${chalk.bold(id)}`),
           })
         },
       })
@@ -174,6 +299,8 @@ function bookmarkListOutput(items: BookmarkListItem[]): BookmarkListOutputItem[]
     site: item.site_name || null,
     host: item.host_url || null,
     created: item.created_at || null,
+    snapshot: `https://r.slax.com/b/${item.bookmark_user_uuid}`,
+    origin: item.target_url,
   }))
 }
 
@@ -191,6 +318,8 @@ function renderBookmarkList(items: BookmarkListOutputItem[], page: number, size:
     console.log(`Site: ${item.site ?? ''}`)
     console.log(`Host: ${item.host ?? ''}`)
     console.log(`Created: ${item.created ? new Date(item.created).toLocaleString() : ''}`)
+    console.log(`Snapshot: ${item.snapshot}`)
+    console.log(`Origin: ${item.origin}`)
     console.log()
   }
   const nextPage = page + 1
@@ -199,7 +328,7 @@ function renderBookmarkList(items: BookmarkListOutputItem[], page: number, size:
   console.log(chalk.dim(`AI paging hint: current page is ${page}; request the next page with ${chalk.bold(`reader-cli list --page ${nextPage} --size ${size} --filter ${filter}`)}${previousPage ? `, or the previous page with ${chalk.bold(`reader-cli list --page ${previousPage} --size ${size} --filter ${filter}`)}` : ''}.`))
 }
 
-function bookmarkDetailOutput(metadata: BookmarkMetadata, content: string | null): BookmarkDetailOutput {
+function bookmarkDetailOutput(bmUid: string, metadata: BookmarkMetadata, content: string | null): BookmarkDetailOutput {
   return {
     title: metadata.alias_title || metadata.title,
     author: metadata.byline || null,
@@ -209,7 +338,7 @@ function bookmarkDetailOutput(metadata: BookmarkMetadata, content: string | null
     created: metadata.created_at ?? null,
     words: metadata.content_word_count ?? null,
     origin: metadata.target_url,
-    snapshot: `https://r.slax.com/bookmarks/${metadata.bookmark_id}`,
+    snapshot: `https://r.slax.com/b/${bmUid}`,
     content,
   }
 }
@@ -229,4 +358,12 @@ function renderBookmarkDetail(detail: BookmarkDetailOutput): void {
   console.log()
   console.log(chalk.bold('Content'))
   console.log(detail.content ?? '')
+}
+
+async function resolveBookmarkId(uid: string): Promise<number> {
+  const metadata = await request<BookmarkMetadata>('GET', `/v1/bookmark/metadata?bookmark_uid=${uid}`)
+  if (metadata.bookmark_id == null) {
+    throw new CommandError('bookmark_id_missing', `Could not resolve a numeric bookmark id for ${uid}.`)
+  }
+  return metadata.bookmark_id
 }

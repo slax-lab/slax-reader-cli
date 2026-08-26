@@ -37,6 +37,12 @@ Do not require a login check before `login`, `logout`, `upgrade --check`, `skill
 | Filter bookmarks | `reader-cli list --filter <all\|inbox\|archive\|starred> --json` |
 | Get bookmark detail | `reader-cli get <bookmark-id>` |
 | Get bookmark as Markdown | `reader-cli get <bookmark-id> --markdown` |
+| Archive a bookmark | `reader-cli archive <bookmark-id> --json` |
+| Unarchive a bookmark | `reader-cli unarchive <bookmark-id> --json` |
+| Star a bookmark | `reader-cli star <bookmark-id> --json` |
+| Unstar a bookmark | `reader-cli unstar <bookmark-id> --json` |
+| Delete a bookmark (recoverable) | `reader-cli delete <bookmark-id> --json` |
+| Restore a deleted bookmark | `reader-cli restore <bookmark-id> --json` |
 | Check CLI update | `reader-cli upgrade --check --json` |
 | Sync skill | `reader-cli skill --sync --json` |
 | Check skill sync | `reader-cli skill --check --json` |
@@ -57,6 +63,15 @@ Do not require a login check before `login`, `logout`, `upgrade --check`, `skill
 - Use `reader-cli get <bookmark-id>` when the user asks to open, inspect, summarize, or read details for a specific bookmark ID.
 - Use `reader-cli get <bookmark-id> --markdown` when the user wants the content in Markdown format (e.g. for further processing or display).
 - Do not guess bookmark IDs; ask the user for an ID or list bookmarks first.
+
+## Organizing bookmarks
+
+- `add <url> --archive` is a save-time mode for a *new* URL; `archive <bookmark-id>` moves an *already-saved* bookmark out of the inbox. They are unrelated — do not confuse them.
+- Use `reader-cli archive <bookmark-id>` when the user wants to archive a bookmark; use `reader-cli unarchive <bookmark-id>` to move it back to the inbox.
+- Use `reader-cli star <bookmark-id>` / `reader-cli unstar <bookmark-id>` when the user wants to star or unstar a bookmark.
+- Use `reader-cli delete <bookmark-id>` to delete a bookmark — this is recoverable, not permanent. Use `reader-cli restore <bookmark-id>` to undo it.
+- Confirm with the user before deleting a bookmark unless they've already clearly asked you to delete it.
+- Do not guess bookmark IDs for any of these actions; ask the user for an ID or list bookmarks first.
 
 ## Update and skill hints
 
